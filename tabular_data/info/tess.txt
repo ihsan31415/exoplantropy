@@ -1,0 +1,90 @@
+# This file was produced by the NASA Exoplanet Archive  http://exoplanetarchive.ipac.caltech.edu
+# Thu Oct  2 20:46:33 2025
+#
+# COLUMN toi:            TESS Object of Interest
+# COLUMN toipfx:         TESS Object of Interest Prefix
+# COLUMN tid:            TESS Input Catalog ID
+# COLUMN ctoi_alias:     TESS Input Catalog of Interest Alias
+# COLUMN pl_pnum:        Pipeline Signal ID
+# COLUMN tfopwg_disp:    TFOPWG Dispostion (CP | FP | KP | PC)
+# COLUMN rastr:          RA [sexagesimal]
+# COLUMN ra:             RA [deg]
+# COLUMN raerr1:         RA Upper Unc
+# COLUMN raerr2:         RA Lower Unc
+# COLUMN decstr:         Dec [sexagesimal]
+# COLUMN dec:            Dec [deg]
+# COLUMN decerr1:        Dec Upper Unc
+# COLUMN decerr2:        Dec Lower Unc
+# COLUMN st_pmra:        PMRA [mas/yr]
+# COLUMN st_pmraerr1:    PMRA Upper Unc [mas/yr]
+# COLUMN st_pmraerr2:    PMRA Lower Unc [mas/yr]
+# COLUMN st_pmralim:     PMRA Limit Flag
+# COLUMN st_pmrasymerr:  PMRA Symmetric Error Flag
+# COLUMN st_pmdec:       PMDec [mas/yr]
+# COLUMN st_pmdecerr1:   PMDec Upper Unc [mas/yr]
+# COLUMN st_pmdecerr2:   PMDec Lower Unc [mas/yr]
+# COLUMN st_pmdeclim:    PMDec Limit Flag
+# COLUMN st_pmdecsymerr: PMDec Symmetric Error Flag
+# COLUMN pl_tranmid:     Planet Transit Midpoint Value [BJD]
+# COLUMN pl_tranmiderr1: Planet Transit Midpoint Upper Unc [BJD]
+# COLUMN pl_tranmiderr2: Planit Transit Midpoint Lower Unc [BJD]
+# COLUMN pl_tranmidlim:  Planet Transit Midpoint Limit Flag
+# COLUMN pl_tranmidsymerr: Planet Transit Midpoint Symmetric Error Flag
+# COLUMN pl_orbper:      Planet Orbital Period Value [days]
+# COLUMN pl_orbpererr1:  Planet Orbital Period Upper Unc [days]
+# COLUMN pl_orbpererr2:  Planet Orbital Period Lower Unc [days]
+# COLUMN pl_orbperlim:   Planet Orbital Period Limit Flag
+# COLUMN pl_orbpersymerr: Planet Orbital Period Symmetric Error Flag
+# COLUMN pl_trandurh:    Planet Transit Duration Value [hours]
+# COLUMN pl_trandurherr1: Planet Transit Duration Upper Unc [hours]
+# COLUMN pl_trandurherr2: Planet Transit Duration Lower Unc [hours]
+# COLUMN pl_trandurhlim: Planet Transit Duration Limit Flag
+# COLUMN pl_trandurhsymerr: Planet Transit Duration Symmetric Error Flag
+# COLUMN pl_trandep:     Planet Transit Depth Value [ppm]
+# COLUMN pl_trandeperr1: Planet Transit Depth Upper Unc [ppm]
+# COLUMN pl_trandeperr2: Planet Transit Depth Lower Unc [ppm]
+# COLUMN pl_trandeplim:  Planet Transit Depth Limit Flag
+# COLUMN pl_trandepsymerr: Planet Transit Depth Symmetric Error Flag
+# COLUMN pl_rade:        Planet Radius Value [R_Earth]
+# COLUMN pl_radeerr1:    Planet Radius Upper Unc [R_Earth]
+# COLUMN pl_radeerr2:    Planet Radius Lower Unc [R_Earth]
+# COLUMN pl_radelim:     Planet Radius Limit Flag
+# COLUMN pl_radesymerr:  Planet Radius Symmetric Error Flag
+# COLUMN pl_insol:       Planet Insolation Value [Earth flux]
+# COLUMN pl_insolerr1:   Planet Insolation Upper Unc [Earth flux]
+# COLUMN pl_insolerr2:   Planet Insolation Lower Unc [Earth flux]
+# COLUMN pl_insollim:    Planet Insolation Limit Flag
+# COLUMN pl_insolsymerr: Planet Insolation Symmetric Error Flag
+# COLUMN pl_eqt:         Planet Equilibrium Temperature Value [K]
+# COLUMN pl_eqterr1:     Planet Equilibrium Temperature Upper Unc [K]
+# COLUMN pl_eqterr2:     Planet Equilibrium Temperature Lower Unc [K]
+# COLUMN pl_eqtlim:      Planet Equilibrium Temperature Limit Flag
+# COLUMN pl_eqtsymerr:   Planet Equilibrium Temperature Symmetric Error Flag
+# COLUMN st_tmag:        TESS Magnitude
+# COLUMN st_tmagerr1:    TESS Magnitude Upper Unc
+# COLUMN st_tmagerr2:    TESS Magnitude Lower Unc
+# COLUMN st_tmaglim:     TESS Magnitude Limit Flag
+# COLUMN st_tmagsymerr:  TESS Magnitude Symmetric Error Flag
+# COLUMN st_dist:        Stellar Distance [pc]
+# COLUMN st_disterr1:    Stellar Distance Upper Unc [pc]
+# COLUMN st_disterr2:    Stellar Distance Lower Unc [pc]
+# COLUMN st_distlim:     Stellar Distance Limit Flag
+# COLUMN st_distsymerr:  Stellar Distance Symmetric Error Flag
+# COLUMN st_teff:        Stellar Effective Temperature Value [K]
+# COLUMN st_tefferr1:    Stellar Effective Termperature Upper Unc [K]
+# COLUMN st_tefferr2:    Stellar Effective Temperature Lower Unc [K]
+# COLUMN st_tefflim:     Stellar Effective Temperature Limit Flag
+# COLUMN st_teffsymerr:  Stellar Effective Temperature Symmetric Error Flag
+# COLUMN st_logg:        Stellar log(g) Value [cm/s**2]
+# COLUMN st_loggerr1:    Stellar log(g) Upper Unc [cm/s**]
+# COLUMN st_loggerr2:    Stellar log(g) Lower Unc [cm/s**2]
+# COLUMN st_logglim:     Stellar log(g) Limit Flag
+# COLUMN st_loggsymerr:  Stellar log(g) Symmetric Error Flag
+# COLUMN st_rad:         Stellar Radius Value [R_Sun]
+# COLUMN st_raderr1:     Stellar Radius Upper Unc [R_Sun]
+# COLUMN st_raderr2:     Stellar Radius Lower Unc [R_Sun]
+# COLUMN st_radlim:      Stellar Radius Limit Flag
+# COLUMN st_radsymerr:   Stellar Radius Symmetric Error Flag
+# COLUMN toi_created:    TOI Created Date
+# COLUMN rowupdate:      Date Modified
+#
