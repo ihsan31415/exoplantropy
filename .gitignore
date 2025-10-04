@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE and OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Streamlit secrets
+.streamlit/
+
+# Model artifacts and reports
+data/
+models/
+reports/
+outputs/
+
+# Notebooks checkpoints
+.ipynb_checkpoints/

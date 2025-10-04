@@ -1,0 +1,19 @@
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+joblib
+imbalanced-learn
+streamlit
+google-generativeai
+# PyTorch and Skorch for wrapping ExoMiner model
+torch
+tensorflow
+skorch
+# ExoMiner framework from GitHub
+# Manual import of ExoMiner:
+# Clone the ExoMiner repository since it lacks setup.py/pyproject.toml
+#   git clone https://github.com/nasa/ExoMiner.git third_party/ExoMiner
+# Then add the path to PYTHONPATH or in code:
+#   import sys; sys.path.append("third_party/ExoMiner")
