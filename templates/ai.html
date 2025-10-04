@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - ExoPlanTropy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Oxanium:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        body {
+            font-family: 'Oxanium', sans-serif;
+            background-color: #0f172a;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+<body class="text-gray-200 antialiased overflow-x-hidden" style="background-image: url('{{ url_for('static', filename='img/Starry.png') }}');">
+
+    <div class="relative min-h-screen flex flex-col w-full bg-black/30">
+        <!-- Header Navigation -->
+        <header class="w-full max-w-7xl mx-auto flex justify-between items-center p-4 bg-[#1e293b]/50 backdrop-blur-md rounded-b-2xl border-b border-white/10">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="{{ url_for('static', filename='img/Logo.png') }}" alt="ExoPlanTropy Logo" class="w-7 h-7 object-contain">
+                <h1 class="text-xl font-bold text-white tracking-wider">ExoPlanTropy</h1>
+            </a>
+            <nav class="hidden sm:flex items-center space-x-8 text-sm font-medium">
+                <a href="/" class="text-gray-300 hover:text-white transition-colors duration-300">Home</a>
+                <a href="/about" class="text-gray-300 hover:text-white transition-colors duration-300">About Us</a>
+                <a href="/ai" class="text-white border-b-2 border-white pb-1">AI</a>
+            </nav>
+        </header>
+
+        <!-- Breadcrumb & Title -->
+        <div class="w-full max-w-7xl mx-auto px-4 pt-8">
+            <p class="text-sm mb-4"><a href="/" class="text-gray-400 hover:text-white transition-colors duration-300">Home</a> <span class="text-gray-400">></span> <span class="text-gray-300">AI</span></p>
+            <h2 class="text-6xl lg:text-7xl font-bold text-white tracking-wider font-[Orbitron] mb-8">Entropy</h2>
+        </div>
+
+        <!-- Main Content -->
+        <main class="flex-grow flex flex-col w-full max-w-7xl mx-auto px-4">
+            <!-- Chat Container -->
+            <div class="flex-grow flex flex-col space-y-4 bg-[#1e293b]/50 backdrop-blur-md rounded-2xl p-6 border border-white/10 mb-4">
+                <!-- Message from AI -->
+                <div class="flex items-start space-x-4">
+                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                        <img src="{{ url_for('static', filename='img/Logo.png') }}" alt="AI" class="w-6 h-6">
+                    </div>
+                    <div class="flex-grow">
+                        <p class="text-sm text-gray-400">Entropy</p>
+                        <div class="mt-1 text-gray-200">
+                            Hello there! 👋 I'm Entropy, your AI assistant for exploring exoplanets. How can I help you today?
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="sticky bottom-4 w-full bg-[#1e293b]/50 backdrop-blur-md rounded-xl border border-white/10 p-4">
+                <form class="flex items-center space-x-4">
+                    <input type="text" placeholder="Ask me anything about exoplanets..." 
+                           class="flex-grow bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25">
+                    <button type="submit" class="bg-white hover:bg-gray-200 text-gray-900 font-semibold rounded-lg px-6 py-3 transition-colors duration-300 flex items-center space-x-2">
+                        <span>Send</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Chatbot functionality can be added here
+        const form = document.querySelector('form');
+        const input = document.querySelector('input');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (input.value.trim() !== '') {
+                // Handle message sending here
+                input.value = '';
+            }
+        });
+    </script>
+</body>
+</html>

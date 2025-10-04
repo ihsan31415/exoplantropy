@@ -18,6 +18,16 @@ def about():
 def project():
     return render_template('project.html')
 
+# Route for the AI page
+@app.route('/ai')
+def ai():
+    return render_template('ai.html')
+
+# Route for the Search Target page
+@app.route('/search')
+def search():
+    return render_template('search.html')
+
 # This block allows you to run the app directly from the script
 if __name__ == '__main__':
     app.run(debug=True)

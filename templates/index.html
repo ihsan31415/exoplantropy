@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - ExoPlanTropy</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Oxanium:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Oxanium', sans-serif;
             background-color: #0f172a;
             background-size: cover;
             background-position: center;
@@ -30,23 +31,25 @@
                 <h1 class="text-xl font-bold text-white tracking-wider">ExoPlanTropy</h1>
             </a>
             <nav class="hidden sm:flex items-center space-x-8 text-sm font-medium">
-                <a href="#" class="text-gray-300 hover:text-white transition-colors duration-300">AI</a>
                 <a href="/" class="text-white border-b-2 border-white pb-1">Home</a>
                 <a href="/about" class="text-gray-300 hover:text-white transition-colors duration-300">About us</a>
-                <a href="/project" class="text-gray-300 hover:text-white transition-colors duration-300">Analysis</a>
+                <a href="/ai" class="text-gray-300 hover:text-white transition-colors duration-300">AI</a>
             </nav>
         </header>
 
+        <!-- Breadcrumb & Title -->
+        <div class="w-full max-w-7xl mx-auto px-4 pt-8">
+            <p class="text-sm mb-4"><span class="text-gray-300">Home</span> <span class="text-gray-400">></span></p>
+            <h2 class="text-6xl lg:text-7xl font-bold text-white tracking-wider font-[Orbitron] mb-4">ExoPlanTropy</h2>
+            <p class="text-lg text-gray-300 mb-8">in search of new world</p>
+        </div>
+
         <!-- Main Content -->
-        <main class="flex-grow flex items-center w-full max-w-7xl mx-4 px-4 py-2">
-            <div class="grid md:grid-cols-2 gap-8 items-center w-full">
+        <main class="flex-grow flex items-start w-full max-w-7xl mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-8 items-start w-full">
                 <!-- Left Column -->
                 <div class="flex flex-col items-start">
-                    <p class="text-sm text-gray-400 mb-4">Home ></p>
-                    <h2 class="text-6xl lg:text-8xl font-extrabold text-white tracking-tighter mb-4">ExoPlanTropy</h2>
-                    <p class="text-lg text-gray-300 mb-8">in search of new world</p>
-                    
-                    <!-- Updated Dropdown Section -->
+                    <!-- Analysis Dropdown Section -->
                     <div class="relative" id="analysis-dropdown-container">
                         <button id="analysis-button" class="w-64 text-left bg-gray-700/50 hover:bg-gray-600/50 border border-white/20 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300 flex items-center justify-between">
                             <span>Start New Analysis</span>
@@ -55,9 +58,9 @@
                         
                         <!-- Dropdown Menu with new style -->
                         <div id="dropdown-menu" class="dropdown-menu absolute mt-2 w-64 space-y-2 hidden opacity-0 -translate-y-2">
-                            <a href="#" class="block text-left bg-gray-700/50 hover:bg-gray-600/50 border border-white/20 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300">Manual input</a>
-                            <a href="#" class="block text-left bg-gray-700/50 hover:bg-gray-600/50 border border-white/20 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300">Batch input (CSV)</a>
-                            <a href="#" class="block text-left bg-gray-700/50 hover:bg-gray-600/50 border border-white/20 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300">Search Target</a>
+                            <a href="/manual" class="block text-left bg-gray-700/50 hover:bg-gray-600/50 border border-white/20 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300">Manual input</a>
+                            <a href="/batch" class="block text-left bg-gray-700/50 hover:bg-gray-600/50 border border-white/20 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300">Batch input (CSV)</a>
+                            <a href="/search" class="block text-left bg-gray-700/50 hover:bg-gray-600/50 border border-white/20 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300">Search Target</a>
                         </div>
                     </div>
 
@@ -72,7 +75,7 @@
                         <div class="flex justify-center space-x-4">
                             <button class="bg-white hover:bg-gray-200 text-gray-900 font-bold py-2 px-6 rounded-full flex items-center space-x-2 transition-transform hover:scale-105">
                                 <span>Entropy</span>
-                                <img src="{{ url_for('static', filename='img/Logo.png') }}" alt="Entropy Logo" class="w-5 h-5">
+                                <img src="{{ url_for('static', filename='img/Logo.png') }}" alt="Entropy Logo" class="w-5 h-5 brightness-0" style="filter: brightness(0);">
                             </button>
                             <button class="bg-gray-700/80 hover:bg-gray-600/80 w-10 h-10 rounded-full flex items-center justify-center font-bold transition-transform hover:scale-105">
                                 i
