@@ -28,6 +28,11 @@ def ai():
 def search():
     return render_template('search.html')
 
+# Route for the Manual Input Target page
+@app.route('/manual')
+def manual():
+    return render_template('manual.html')
+
 # This block allows you to run the app directly from the script
 if __name__ == '__main__':
     app.run(debug=True)
