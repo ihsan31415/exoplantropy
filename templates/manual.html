@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manual Input - ExoPlanTropy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Oxanium:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <style>
+      body {
+        font-family: "Oxanium", sans-serif;
+        background-color: #0f172a;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }
+    </style>
+  </head>
+  <body
+    class="text-gray-200 antialiased overflow-x-hidden"
+    style="background-image: url('{{ url_for('static', filename='img/Starry.png') }}');"
+  >
+    <div class="relative min-h-screen flex flex-col w-full bg-black/30">
+      <!-- Header Navigation -->
+      <header
+        class="w-full max-w-7xl mx-auto flex justify-between items-center p-4 bg-[#1e293b]/50 backdrop-blur-md rounded-b-2xl border-b border-white/10"
+      >
+        <a href="/" class="flex items-center space-x-3">
+          <img
+            src="{{ url_for('static', filename='img/Logo.png') }}"
+            alt="ExoPlanTropy Logo"
+            class="w-7 h-7 object-contain"
+          />
+          <h1 class="text-xl font-bold text-white tracking-wider">
+            ExoPlanTropy
+          </h1>
+        </a>
+        <nav class="hidden sm:flex items-center space-x-8 text-sm font-medium">
+          <a
+            href="/"
+            class="text-gray-300 hover:text-white transition-colors duration-300"
+            >Home</a
+          >
+          <a
+            href="/about"
+            class="text-gray-300 hover:text-white transition-colors duration-300"
+            >About Us</a
+          >
+          <a
+            href="/ai"
+            class="text-gray-300 hover:text-white transition-colors duration-300"
+            >AI</a
+          >
+        </nav>
+      </header>
+
+      <!-- Breadcrumb & Title -->
+      <div class="w-full max-w-7xl mx-auto px-4 pt-8">
+        <p class="text-sm mb-4">
+          <a
+            href="/"
+            class="text-gray-400 hover:text-white transition-colors duration-300"
+            >Home</a
+          >
+          <span class="text-gray-400">></span>
+          <span class="text-gray-300">Analysis</span>
+        </p>
+        <h2
+          class="text-6xl lg:text-7xl font-bold text-white tracking-wider font-[Orbitron] mb-8"
+        >
+          Analysis
+        </h2>
+      </div>
+
+      <!-- Main Content -->
+      <main
+        class="flex-grow flex items-center justify-center w-full max-w-7xl mx-auto px-4"
+      >
+        <div
+          class="w-full max-w-3xl bg-[#1e293b]/50 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/10"
+        >
+          <h3 class="text-2xl font-semibold text-white mb-6">Manual Input</h3>
+
+          <!-- Search Form -->
+          <form class="space-y-6">
+            <div class="flex space-x-4">
+              <input
+                type="text"
+                placeholder="Param 1"
+                class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+              />
+              <input
+                type="text"
+                placeholder="Param 2"
+                class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+              />
+            </div>
+            <div class="flex space-x-4">
+              <input
+                type="text"
+                placeholder="Param 1"
+                class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+              />
+              <input
+                type="text"
+                placeholder="Param 2"
+                class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+              />
+            </div>
+            <div class="flex space-x-4">
+              <input
+                type="text"
+                placeholder="Param 1"
+                class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+              />
+              <input
+                type="text"
+                placeholder="Param 2"
+                class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+              />
+            </div>
+            <div class="flex space-x-4">
+              <input
+                type="text"
+                placeholder="Param 1"
+                class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+              />
+              <input
+                type="text"
+                placeholder="Param 2"
+                class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+              />
+            </div>
+            <div class="flex justify-between items-center">
+              <button
+                type="submit"
+                class="bg-white hover:bg-gray-200 text-gray-900 font-semibold rounded-lg px-8 py-3 transition-colors duration-300"
+              >
+                Launch !
+              </button>
+
+              <div class="flex items-center space-x-4">
+                <button
+                  type="button"
+                  class="bg-gray-700/80 hover:bg-gray-600/80 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-300 flex items-center space-x-2"
+                >
+                  <span>Entropy</span>
+                  <img
+                    src="{{ url_for('static', filename='img/Logo.png') }}"
+                    alt="Entropy Logo"
+                    class="w-5 h-5"
+                  />
+                </button>
+                <button
+                  type="button"
+                  class="bg-gray-700/80 hover:bg-gray-600/80 w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-transform hover:scale-105"
+                >
+                  i
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

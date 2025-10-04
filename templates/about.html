@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en"></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - ExoPlanTropy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Oxanium:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        body {
+            font-family: 'Oxanium', sans-serif;
+            background-color: #0f172a;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+<body class="text-gray-200 antialiased overflow-x-hidden" style="background-image: url('{{ url_for('static', filename='img/Starry.png') }}');">
+
+    <div class="relative min-h-screen flex flex-col w-full bg-black/30">
+        <!-- Header Navigation -->
+        <header class="w-full max-w-7xl mx-auto flex justify-between items-center p-4 bg-[#1e293b]/50 backdrop-blur-md rounded-b-2xl border-b border-white/10">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="{{ url_for('static', filename='img/Logo.png') }}" alt="ExoPlanTropy Logo" class="w-7 h-7 object-contain">
+                <h1 class="text-xl font-bold text-white tracking-wider">ExoPlanTropy</h1>
+            </a>
+            <nav class="hidden sm:flex items-center space-x-8 text-sm font-medium">
+                <a href="/" class="text-gray-300 hover:text-white transition-colors duration-300">Home</a>
+                <a href="/about" class="text-white border-b-2 border-white pb-1">About Us</a>
+                <a href="/ai" class="text-gray-300 hover:text-white transition-colors duration-300">AI</a>
+            </nav>
+        </header>
+
+            <!-- Breadcrumb & Title -->
+            <div class="w-full max-w-7xl mx-auto px-4 pt-8">
+                <p class="text-sm mb-4"><a href="/" class="text-gray-400 hover:text-white transition-colors duration-300">Home</a> <span class="text-gray-400">></span> <span class="text-gray-300">About us</span></p>
+                <h2 class="text-6xl lg:text-7xl font-bold text-white tracking-wider font-[Orbitron] mb-8">Syntropy</h2>
+            </div>
+
+            <!-- Main Content -->
+            <main class="flex-grow flex items-center justify-center w-full max-w-7xl mx-auto px-4">
+                <div class="w-full max-w-4xl bg-[#1e293b]/50 backdrop-blur-md rounded-2xl p-10 shadow-2xl border border-white/10">
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-8">About Our Mission</h2>
+                    <p class="text-gray-300 text-lg mb-6 leading-relaxed">
+                        Our mission at ExoPlanTropy is to democratize the hunt for exoplanets. We provide accessible tools for enthusiasts and researchers alike to analyze data from space telescopes and uncover new worlds hidden among the stars.
+                    </p>
+                    <p class="text-gray-300 text-lg mb-8 leading-relaxed">
+                        Our mission is to accelerate the discovery of new worlds and deepen our understanding of the cosmos. By automating the initial analysis, we empower astronomers to focus on the most promising candidates, bringing us one step closer to answering humanity's oldest question: Are we alone?
+                    </p>
+                    <div class="mt-8 border-t border-white/10 pt-8">
+                        <h3 class="text-2xl font-semibold text-white mb-4">The Team</h3>
+                        <p class="text-gray-300 text-lg">A passionate group of developers, astronomers, and data scientists united by a shared love for the stars.</p>
+                    </div>
+                    
+                    <div class="w-24 h-1 border-b-2 border-t-2 border-gray-500 mt-12 mx-auto transform -skew-x-12"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+</body>
+</html>
+
