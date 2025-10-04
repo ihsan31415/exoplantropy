@@ -13,7 +13,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from joblib import dump
-from sklearn.impute import SimpleImputer
 from sklearn.metrics import (
     accuracy_score,
     classification_report,
@@ -31,6 +30,7 @@ from sklearn.svm import SVC
 from common import (
     MODELS_DIR,
     REPORTS_DIR,
+    DataFrameSimpleImputer,
     ensure_output_directories,
     load_tess_dataset,
 )
@@ -40,7 +40,7 @@ def build_pipeline(random_state: int = 42) -> Pipeline:
     """Create the modelling pipeline for SVM."""
     return Pipeline(
         steps=[
-            ("imputer", SimpleImputer(strategy="median")),
+            ("imputer", DataFrameSimpleImputer(strategy="median")),
             ("scaler", StandardScaler()),
             (
                 "model",
