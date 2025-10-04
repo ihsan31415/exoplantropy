@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask & Tailwind CSS</title>
+    <!-- Link to Tailwind CSS via CDN for rapid development -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Link to your custom stylesheet (for use with the Tailwind CLI build process) -->
+    <!-- <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet"> -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+          /* Starry night background effect */
+            background-color: #0c142b;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px),
+                radial-gradient(rgba(255,255,255,.4), rgba(255,255,255,.1) 2px, transparent 30px);
+            background-size: 550px 550px, 350px 350px, 250px 250px, 150px 150px; 
+            background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
+            background-attachment: fixed;
+        }
+    </style>
+<head>
+<body class="text-gray-200 antialiased">
+
+    <div class="relative min-h-screen flex flex-col items-center w-full">
+        <!-- Header Navigation -->
+        <header class="w-full max-w-7xl mx-auto flex justify-between items-center p-6 text-white">
+            <h1 class="text-2xl font-bold text-white tracking-wider">Syntropy</h1>
+            <nav class="hidden sm:flex items-center space-x-8 text-sm font-medium">
+                <a href="/" class="text-white border-b-2 border-red-500 pb-1">Home</a>
+                <a href="/about" class="text-gray-300 hover:text-white transition-colors duration-300">About</a>
+                <a href="/project" class="text-gray-300 hover:text-white transition-colors duration-300">Project</a>
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow flex flex-col items-center justify-center w-full text-center mt-10 sm:mt-0">
+            <h2 class="text-5xl md:text-7xl font-bold text-white tracking-widest mb-12">ExoPlanTropy</h2>
+            <!-- Analysis Box with Glassmorphism -->
+            <div class="w-full max-w-xl bg-black/20 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/10">
+                <h3 class="text-xl font-semibold text-white mb-6">Start New Analysis</h3>
+                <div class="space-y-6 text-left">
+                    <div>
+                        <label for="tess-target" class="block text-sm font-medium text-gray-300 mb-2">1. Auto-Detect TESS Target</label>
+                        <div class="flex items-center space-x-3">
+                            <input type="text" id="tess-target" placeholder="Enter target name..." class="flex-grow bg-gray-800/50 border border-gray-600 text-gray-200 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 transition px-4 py-2">
+                            <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-md shadow-lg transition transform hover:scale-105">
+                                Launch
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="file-upload" class="block text-sm font-medium text-gray-300 mb-2">2. Manual File Upload</label>
+                        <div class="relative border-2 border-dashed border-gray-600 hover:border-red-500 rounded-lg p-10 flex flex-col justify-center items-center h-36 cursor-pointer bg-black/10">
+                            <p class="text-sm text-gray-500">Drag & Drop files here</p>
+                            <input id="file-upload" type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
