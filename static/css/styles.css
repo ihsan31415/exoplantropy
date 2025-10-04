@@ -2,9 +2,25 @@
 This is the input file for the Tailwind CSS build process.
 It's where you import Tailwind's base styles, components, and utilities.
 */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Oxanium:wght@200;300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    font-family: 'Oxanium', sans-serif;
+    background-color: #0f172a;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+h1, h2, h3, .title {
+    font-family: 'Orbitron', sans-serif;
+}
+
 
 /* You can also add your own custom CSS here */
 
