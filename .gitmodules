@@ -1,0 +1,3 @@
+[submodule "third_party/ExoMiner"]
+	path = third_party/ExoMiner
+	url = https://github.com/nasa/ExoMiner.git
