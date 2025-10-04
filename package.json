@@ -1,0 +1,22 @@
+{
+  "name": "flask-tailwind-setup",
+  "version": "1.0.0",
+  "description": "A basic setup for a Flask and Tailwind CSS web application.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tailwindcss -i ./static/css/styles.css -o ./static/css/output.css",
+    "watch": "tailwindcss -i ./static/css/styles.css -o ./static/css/output.css --watch"
+  },
+  "keywords": [
+    "flask",
+    "tailwind",
+    "python",
+    "css"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}
+

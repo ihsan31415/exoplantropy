@@ -1,0 +1,10 @@
+/*
+This is the input file for the Tailwind CSS build process.
+It's where you import Tailwind's base styles, components, and utilities.
+*/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* You can also add your own custom CSS here */
+
