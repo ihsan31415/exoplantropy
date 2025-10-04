@@ -1,4 +1,18 @@
-"""Train and evaluate a Decision Tree model on the TESS TOI catalogue."""
+"""Train and evaluate a Decision Tree model on the K2 planet candidate catalogue.
+
+The model predicts whether a K2 Object of Interest is confirmed or a false
+positive based on the `disposition` label. Only rows marked as ``CONFIRMED`` or
+``FALSE POSITIVE`` are included; the former is treated as the positive class.
+
+Outputs:
+- reports/k2_decision_tree_metrics.json: summary metrics and cross-validation scores
+- reports/k2_decision_tree_confusion_matrix.png: confusion matrix heatmap
+- reports/k2_decision_tree_top_features.csv: most important features
+- models/k2_decision_tree.joblib: trained pipeline for reuse
+
+Usage:
+    python scripts/k2_decision_tree.py
+"""
 from __future__ import annotations
 
 import json
@@ -31,7 +45,7 @@ from common import (
     REPORTS_DIR,
     DataFrameSimpleImputer,
     ensure_output_directories,
-    load_tess_dataset,
+    load_k2_dataset,
 )
 
 
@@ -152,7 +166,7 @@ def save_feature_importances(
 def main() -> None:
     ensure_output_directories()
 
-    data = load_tess_dataset()
+    data = load_k2_dataset()
     X_train, X_test, y_train, y_test = train_test_split(
         data.features,
         data.target,
@@ -165,31 +179,31 @@ def main() -> None:
     metrics = evaluate_model(pipeline, X_train, X_test, y_train, y_test)
 
     # Persist model
-    dump(pipeline, MODELS_DIR / "tess_decision_tree.joblib")
+    dump(pipeline, MODELS_DIR / "k2_decision_tree.joblib")
 
     # Save metrics
-    metrics_output = REPORTS_DIR / "tess_decision_tree_metrics.json"
+    metrics_output = REPORTS_DIR / "k2_decision_tree_metrics.json"
     with metrics_output.open("w", encoding="utf-8") as fp:
         json.dump(metrics, fp, indent=2)
 
     # Plot confusion matrix
     y_pred = pipeline.predict(X_test)
-    save_confusion_matrix(y_test, y_pred, REPORTS_DIR / "tess_decision_tree_confusion_matrix.png")
+    save_confusion_matrix(y_test, y_pred, REPORTS_DIR / "k2_decision_tree_confusion_matrix.png")
 
     # Feature importances
     model: DecisionTreeClassifier = pipeline.named_steps["model"]
     save_feature_importances(
         model,
         X_train.columns,
-        REPORTS_DIR / "tess_decision_tree_top_features.csv",
+        REPORTS_DIR / "k2_decision_tree_top_features.csv",
     )
 
-    print("Decision Tree training complete. Key metrics:")
+    print("K2 Decision Tree training complete. Key metrics:")
     for metric in ("accuracy", "precision", "recall", "f1", "roc_auc"):
         print(f"  {metric}: {metrics[metric]:.4f}")
 
     print(f"Detailed metrics saved to {metrics_output}")
-    print(f"Model saved to {MODELS_DIR / 'tess_decision_tree.joblib'}")
+    print(f"Model saved to {MODELS_DIR / 'k2_decision_tree.joblib'}")
 
 
 if __name__ == "__main__":

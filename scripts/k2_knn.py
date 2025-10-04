@@ -1,4 +1,17 @@
-"""Train and evaluate a Decision Tree model on the TESS TOI catalogue."""
+"""Train and evaluate a K-Nearest Neighbors model on the K2 planet candidate catalogue.
+
+The model predicts whether a K2 Object of Interest is confirmed or a false
+positive based on the `disposition` label. Only rows marked as ``CONFIRMED`` or
+``FALSE POSITIVE`` are included; the former is treated as the positive class.
+
+Outputs:
+- reports/k2_knn_metrics.json: summary metrics and cross-validation scores
+- reports/k2_knn_confusion_matrix.png: confusion matrix heatmap
+- models/k2_knn.joblib: trained pipeline for reuse
+
+Usage:
+    python scripts/k2_knn.py
+"""
 from __future__ import annotations
 
 import json
@@ -23,32 +36,33 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 from sklearn.model_selection import StratifiedKFold, cross_validate, train_test_split
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.preprocessing import StandardScaler
 
 from common import (
     MODELS_DIR,
     REPORTS_DIR,
     DataFrameSimpleImputer,
     ensure_output_directories,
-    load_tess_dataset,
+    load_k2_dataset,
 )
 
 
-def build_pipeline(random_state: int = 42) -> Pipeline:
-    """Create the modelling pipeline for Decision Tree."""
+def build_pipeline() -> Pipeline:
+    """Create the modelling pipeline for KNN."""
     return Pipeline(
         steps=[
             ("imputer", DataFrameSimpleImputer(strategy="median")),
+            ("scaler", StandardScaler()),
             (
                 "model",
-                DecisionTreeClassifier(
-                    criterion="gini",
-                    max_depth=12,
-                    min_samples_split=6,
-                    min_samples_leaf=3,
-                    class_weight="balanced",
-                    random_state=random_state,
+                KNeighborsClassifier(
+                    n_neighbors=25,
+                    weights="distance",
+                    metric="minkowski",
+                    p=2,
+                    n_jobs=-1,
                 ),
             ),
         ]
@@ -83,11 +97,11 @@ def evaluate_model(
         ),
     }
 
-    model: DecisionTreeClassifier = pipeline.named_steps["model"]
+    model: KNeighborsClassifier = pipeline.named_steps["model"]
     metrics["model_params"] = {
-        "criterion": model.criterion,
-        "max_depth": int(model.get_depth()),
-        "n_leaves": int(model.get_n_leaves()),
+        "n_neighbors": model.n_neighbors,
+        "weights": model.weights,
+        "metric": model.metric,
     }
 
     cv = StratifiedKFold(n_splits=cv_splits, shuffle=True, random_state=42)
@@ -128,7 +142,7 @@ def save_confusion_matrix(
     labels = ["False positive", "Confirmed"]
 
     plt.figure(figsize=(6, 5))
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Reds", xticklabels=labels, yticklabels=labels)
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Greens", xticklabels=labels, yticklabels=labels)
     plt.ylabel("Actual")
     plt.xlabel("Predicted")
     plt.tight_layout()
@@ -136,23 +150,10 @@ def save_confusion_matrix(
     plt.close()
 
 
-def save_feature_importances(
-    model: DecisionTreeClassifier,
-    feature_names: pd.Index,
-    output_path: Path,
-    top_n: int = 20,
-) -> None:
-    """Persist the top feature importances."""
-    importances = model.feature_importances_
-    df_importance = pd.DataFrame({"feature": feature_names, "importance": importances})
-    df_importance.sort_values(by="importance", ascending=False, inplace=True)
-    df_importance.head(top_n).to_csv(output_path, index=False)
-
-
 def main() -> None:
     ensure_output_directories()
 
-    data = load_tess_dataset()
+    data = load_k2_dataset()
     X_train, X_test, y_train, y_test = train_test_split(
         data.features,
         data.target,
@@ -165,31 +166,23 @@ def main() -> None:
     metrics = evaluate_model(pipeline, X_train, X_test, y_train, y_test)
 
     # Persist model
-    dump(pipeline, MODELS_DIR / "tess_decision_tree.joblib")
+    dump(pipeline, MODELS_DIR / "k2_knn.joblib")
 
     # Save metrics
-    metrics_output = REPORTS_DIR / "tess_decision_tree_metrics.json"
+    metrics_output = REPORTS_DIR / "k2_knn_metrics.json"
     with metrics_output.open("w", encoding="utf-8") as fp:
         json.dump(metrics, fp, indent=2)
 
     # Plot confusion matrix
     y_pred = pipeline.predict(X_test)
-    save_confusion_matrix(y_test, y_pred, REPORTS_DIR / "tess_decision_tree_confusion_matrix.png")
+    save_confusion_matrix(y_test, y_pred, REPORTS_DIR / "k2_knn_confusion_matrix.png")
 
-    # Feature importances
-    model: DecisionTreeClassifier = pipeline.named_steps["model"]
-    save_feature_importances(
-        model,
-        X_train.columns,
-        REPORTS_DIR / "tess_decision_tree_top_features.csv",
-    )
-
-    print("Decision Tree training complete. Key metrics:")
+    print("K2 KNN training complete. Key metrics:")
     for metric in ("accuracy", "precision", "recall", "f1", "roc_auc"):
         print(f"  {metric}: {metrics[metric]:.4f}")
 
     print(f"Detailed metrics saved to {metrics_output}")
-    print(f"Model saved to {MODELS_DIR / 'tess_decision_tree.joblib'}")
+    print(f"Model saved to {MODELS_DIR / 'k2_knn.joblib'}")
 
 
 if __name__ == "__main__":

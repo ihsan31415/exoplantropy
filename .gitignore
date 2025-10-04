@@ -14,9 +14,6 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Streamlit secrets
-.streamlit/
-
 # Model artifacts and reports
 data/
 models/
