@@ -14,12 +14,6 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Model artifacts and reports
-data/
-models/
-reports/
-outputs/
-
 # Local configuration secrets
 config/*.env
 
