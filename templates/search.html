@@ -90,35 +90,17 @@
           class="bg-[#1e293b]/50 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/10"
         >
           <form method="post" class="space-y-6">
-            <div class="grid md:grid-cols-3 gap-4">
-              <div>
-                <label class="block text-xs uppercase text-gray-400 mb-2"
-                  >Dataset</label
-                >
-                <select
-                  name="dataset_key"
-                  class="w-full bg-gray-700/50 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
-                  onchange="this.form.submit()"
-                >
-                  {% for label in dataset_labels %}
-                  {% set key = dataset_label_to_key[label] %}
-                  <option value="{{ key }}" {% if key == dataset_key %}selected{% endif %}>{{ label }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-
-              <div class="md:col-span-2">
-                <label class="block text-xs uppercase text-gray-400 mb-2"
-                  >Target keyword</label
-                >
-                <input
-                  type="text"
-                  name="query"
-                  value="{{ query }}"
-                  placeholder="Example: TOI 700 or KEPID 3547535"
-                  class="w-full bg-gray-700/50 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
-                />
-              </div>
+            <div>
+              <label class="block text-xs uppercase text-gray-400 mb-2"
+                >Target keyword</label
+              >
+              <input
+                type="text"
+                name="query"
+                value="{{ query }}"
+                placeholder="Example: TOI 700 or KEPID 3547535"
+                class="w-full bg-gray-700/50 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+              />
             </div>
 
             <div>
@@ -202,5 +184,6 @@
         {% endif %}
       </main>
     </div>
+    <script src="{{ url_for('static', filename='js/parallax.js') }}" defer></script>
   </body>
-</html>
+  </html>

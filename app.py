@@ -45,6 +45,73 @@ from services.exoplanet_service import (
 )
 
 
+TEAM_MEMBERS: List[Dict[str, str]] = [
+    {
+        "name": "Muhammad Khoirul Ihsan",
+        "role": "Universitas Negeri Semarang",
+        "photo": "img/team/member1.jpg",
+        "linkedin": "https://www.linkedin.com/in/Khoirul-ihsan-syntropy/",
+    },
+    {
+        "name": "Riski Yuniar Pratama",
+        "role": "Universitas Negeri Semarang",
+        "photo": "img/team/member2.jpg",
+        "linkedin": "https://www.linkedin.com/in/riski-yuniar-a08851184/",
+    },
+    {
+        "name": "Lyon Ambrosio Djuanda",
+        "role": "Universitas Negeri Semarang",
+        "photo": "img/team/member3.jpg",
+        "linkedin": "https://www.linkedin.com/in/lyon-ambrosio-djuanda-567298287/",
+    },
+    {
+        "name": "Fikri Achmad Fadilah",
+        "role": "Universitas Negeri Semarang",
+        "photo": "img/team/member4.jpg",
+        "linkedin": "https://www.linkedin.com/in/fikri-achmad-fadilah-7659b22bb/",
+    },
+    {
+        "name": "Sayyid Muhammad Muslim As'ad Sunarko",
+        "role": "Universitas Bina Nusantara",
+        "photo": "img/team/member5.jpg",
+        "linkedin": "https://www.linkedin.com/in/sayyid-muhammad/",
+    },
+    {
+        "name": "Muhammad Dany Hidayat",
+        "role": "Universitas Negeri Semarang",
+        "photo": "img/team/member6.jpg",
+        "linkedin": "https://www.linkedin.com/in/muhammad-dany-hidayat-740091385/",
+    },
+]
+
+
+SUPERVISORS: List[Dict[str, str]] = [
+    {
+        "name": "BRIN",
+        "title": "Supervising Mentor",
+        "intro": "BRIN has been instrumental in guiding our research direction and providing valuable insights into exoplanet studies.",
+        "photo": "img/team/supervisor1.webp",
+        "linkedin": "https://www.linkedin.com/in/supervisor",
+    }
+]
+
+
+THANKS_TO: List[Dict[str, str]] = [
+    {
+        "name": "BRIN",
+        "photo": "img/team/brin.jpg",
+        "link": "https://www.brin.go.id/",
+        "caption": "National Research and Innovation Agency"
+    },
+    {
+        "name": "NASA",
+        "photo": "img/team/nasa.jpg",
+        "link": "https://www.nasa.gov/",
+        "caption": "National Aeronautics and Space Administration"
+    },
+]
+
+
 def create_app() -> Flask:
     app = Flask(__name__)
     app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-entropy")
@@ -91,7 +158,12 @@ def create_app() -> Flask:
 
     @app.route("/about")
     def about():
-        return render_template("about.html")
+        return render_template(
+            "about.html",
+            team_members=TEAM_MEMBERS,
+            supervisors=SUPERVISORS,
+            thanks_to=THANKS_TO,
+        )
 
     @app.route("/manual", methods=["GET", "POST"])
     def manual():
