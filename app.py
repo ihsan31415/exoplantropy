@@ -33,6 +33,11 @@ def search():
 def manual():
     return render_template('manual.html')
 
+# Route for the CSV Input Target page
+@app.route('/csv')
+def csv():
+    return render_template('csv.html')
+
 # This block allows you to run the app directly from the script
 if __name__ == '__main__':
     app.run(debug=True)
