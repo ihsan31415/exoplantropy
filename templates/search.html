@@ -1,76 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Target - ExoPlanTropy</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Targets - ExoPlanTropy</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Oxanium:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Oxanium:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
     <style>
-        body {
-            font-family: 'Oxanium', sans-serif;
-            background-color: #0f172a;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
+      body {
+        font-family: "Oxanium", sans-serif;
+        background-color: #0f172a;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }
     </style>
-</head>
-<body class="text-gray-200 antialiased overflow-x-hidden" style="background-image: url('{{ url_for('static', filename='img/Starry.png') }}');">
-
+  </head>
+  <body
+    class="text-gray-200 antialiased overflow-x-hidden"
+    style="background-image: url('{{ url_for('static', filename='img/Starry.png') }}');"
+  >
     <div class="relative min-h-screen flex flex-col w-full bg-black/30">
-        <!-- Header Navigation -->
-        <header class="w-full max-w-7xl mx-auto flex justify-between items-center p-4 bg-[#1e293b]/50 backdrop-blur-md rounded-b-2xl border-b border-white/10">
-            <a href="/" class="flex items-center space-x-3">
-                <img src="{{ url_for('static', filename='img/Logo.png') }}" alt="ExoPlanTropy Logo" class="w-7 h-7 object-contain">
-                <h1 class="text-xl font-bold text-white tracking-wider">ExoPlanTropy</h1>
-            </a>
-            <nav class="hidden sm:flex items-center space-x-8 text-sm font-medium">
-                <a href="/" class="text-gray-300 hover:text-white transition-colors duration-300">Home</a>
-                <a href="/about" class="text-gray-300 hover:text-white transition-colors duration-300">About Us</a>
-                <a href="/ai" class="text-gray-300 hover:text-white transition-colors duration-300">AI</a>
-            </nav>
-        </header>
+      <header
+        class="w-full max-w-7xl mx-auto flex justify-between items-center p-4 bg-[#1e293b]/50 backdrop-blur-md rounded-b-2xl border-b border-white/10"
+      >
+        <a href="/" class="flex items-center space-x-3">
+          <img
+            src="{{ url_for('static', filename='img/Logo.png') }}"
+            alt="ExoPlanTropy Logo"
+            class="w-7 h-7 object-contain"
+          />
+          <h1 class="text-xl font-bold text-white tracking-wider">
+            ExoPlanTropy
+          </h1>
+        </a>
+        <nav class="hidden sm:flex items-center space-x-8 text-sm font-medium">
+          <a
+            href="/"
+            class="text-gray-300 hover:text-white transition-colors duration-300"
+            >Home</a
+          >
+          <a
+            href="/about"
+            class="text-gray-300 hover:text-white transition-colors duration-300"
+            >About Us</a
+          >
+          <a
+            href="/ai"
+            class="text-gray-300 hover:text-white transition-colors duration-300"
+            >AI</a
+          >
+        </nav>
+      </header>
 
-        <!-- Breadcrumb & Title -->
-        <div class="w-full max-w-7xl mx-auto px-4 pt-8">
-            <p class="text-sm mb-4"><a href="/" class="text-gray-400 hover:text-white transition-colors duration-300">Home</a> <span class="text-gray-400">></span> <span class="text-gray-300">Analysis</span></p>
-            <h2 class="text-6xl lg:text-7xl font-bold text-white tracking-wider font-[Orbitron] mb-8">Analysis</h2>
-        </div>
+      <div class="w-full max-w-7xl mx-auto px-4 pt-8">
+        <p class="text-sm mb-4">
+          <a
+            href="/"
+            class="text-gray-400 hover:text-white transition-colors duration-300"
+            >Home</a
+          >
+          <span class="text-gray-400">></span>
+          <span class="text-gray-300">Search</span>
+        </p>
+        <h2
+          class="text-5xl lg:text-6xl font-bold text-white tracking-wider font-[Orbitron] mb-6"
+        >
+          Find Targets
+        </h2>
+        <p class="text-gray-300 max-w-3xl">
+          Locate specific candidates in the prediction results. The search runs
+          across the primary identifier columns (TOI, TIC, KOI, etc.) for the
+          dataset you selected.
+        </p>
+      </div>
 
-        <!-- Main Content -->
-        <main class="flex-grow flex items-center justify-center w-full max-w-7xl mx-auto px-4">
-            <div class="w-full max-w-3xl bg-[#1e293b]/50 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/10">
-                <h3 class="text-2xl font-semibold text-white mb-6">Search Target</h3>
-                
-                <!-- Search Form -->
-                <form class="space-y-6">
-                    <div>
-                        <input type="text" 
-                               placeholder="Enter target name..." 
-                               class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25">
-                    </div>
-                    
-                    <div class="flex justify-between items-center">
-                        <button type="submit" class="bg-white hover:bg-gray-200 text-gray-900 font-semibold rounded-lg px-8 py-3 transition-colors duration-300">
-                            Launch !
-                        </button>
-                        
-                        <div class="flex items-center space-x-4">
-                            <button type="button" class="bg-gray-700/80 hover:bg-gray-600/80 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-300 flex items-center space-x-2">
-                                <span>Entropy</span>
-                                <img src="{{ url_for('static', filename='img/Logo.png') }}" alt="Entropy Logo" class="w-5 h-5">
-                            </button>
-                            <button type="button" class="bg-gray-700/80 hover:bg-gray-600/80 w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-transform hover:scale-105">
-                                i
-                            </button>
-                        </div>
-                    </div>
-                </form>
+      <main
+        class="flex-grow flex flex-col gap-6 w-full max-w-7xl mx-auto px-4 pb-12"
+      >
+        <section
+          class="bg-[#1e293b]/50 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/10"
+        >
+          <form method="post" class="space-y-6">
+            <div class="grid md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs uppercase text-gray-400 mb-2"
+                  >Dataset</label
+                >
+                <select
+                  name="dataset_key"
+                  class="w-full bg-gray-700/50 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+                  onchange="this.form.submit()"
+                >
+                  {% for label in dataset_labels %}
+                  {% set key = dataset_label_to_key[label] %}
+                  <option value="{{ key }}" {% if key == dataset_key %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-xs uppercase text-gray-400 mb-2"
+                  >Target keyword</label
+                >
+                <input
+                  type="text"
+                  name="query"
+                  value="{{ query }}"
+                  placeholder="Example: TOI 700 or KEPID 3547535"
+                  class="w-full bg-gray-700/50 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+                />
+              </div>
             </div>
-        </main>
+
+            <div>
+              <label class="block text-xs uppercase text-gray-400 mb-2"
+                >Models in use</label
+              >
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-gray-700/30 rounded-lg p-4 border border-white/10 max-h-40 overflow-y-auto">
+                {% for model_name in models %}
+                <label class="flex items-center space-x-2 text-sm">
+                  <input
+                    type="checkbox"
+                    name="models"
+                    value="{{ model_name }}"
+                    class="rounded"
+                    {% if model_name in selected_models %}checked{% endif %}
+                  />
+                  <span>{{ model_name }}</span>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="flex justify-between items-center">
+              <button
+                type="submit"
+                class="bg-white hover:bg-gray-200 text-gray-900 font-semibold rounded-lg px-8 py-3 transition-colors duration-300"
+              >
+                Search targets
+              </button>
+              <p class="text-xs text-gray-400">
+                The search is case-sensitive; use unique keywords.
+              </p>
+            </div>
+          </form>
+        </section>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="space-y-3">
+          {% for category, message in messages %}
+          <div
+            class="px-4 py-3 rounded-lg border border-white/10 {% if category == 'error' %}bg-red-500/20 text-red-200{% elif category == 'warning' %}bg-yellow-500/20 text-yellow-100{% else %}bg-white/10 text-gray-100{% endif %}"
+          >
+            {{ message }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% if results %}
+        <section class="space-y-6">
+          {% for model_name, rows in results.items() %}
+          <div class="bg-[#1e293b]/40 backdrop-blur-md rounded-2xl p-6 border border-white/10">
+            <h3 class="text-lg font-semibold text-white mb-4">{{ model_name }}</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left text-gray-200">
+                <thead class="uppercase text-xs text-gray-400 bg-white/5">
+                  {% if rows %}
+                  <tr>
+                    {% for key in rows[0].keys() %}
+                    <th class="px-4 py-3">{{ key.replace('_', ' ') }}</th>
+                    {% endfor %}
+                  </tr>
+                  {% endif %}
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                  {% for row in rows %}
+                  <tr>
+                    {% for value in row.values() %}
+                    <td class="px-4 py-3">{{ value }}</td>
+                    {% endfor %}
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% endfor %}
+        </section>
+        {% endif %}
+      </main>
     </div>
-</body>
+  </body>
 </html>

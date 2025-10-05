@@ -1,91 +1,310 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI Assistant - ExoPlanTropy</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Oxanium:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Oxanium:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
     <style>
-        body {
-            font-family: 'Oxanium', sans-serif;
-            background-color: #0f172a;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
+      body {
+        font-family: "Oxanium", sans-serif;
+        background-color: #0f172a;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }
     </style>
-</head>
-<body class="text-gray-200 antialiased overflow-x-hidden" style="background-image: url('{{ url_for('static', filename='img/Starry.png') }}');">
-
+  </head>
+  <body
+    class="text-gray-200 antialiased overflow-x-hidden"
+    style="background-image: url('{{ url_for('static', filename='img/Starry.png') }}');"
+  >
     <div class="relative min-h-screen flex flex-col w-full bg-black/30">
-        <!-- Header Navigation -->
-        <header class="w-full max-w-7xl mx-auto flex justify-between items-center p-4 bg-[#1e293b]/50 backdrop-blur-md rounded-b-2xl border-b border-white/10">
-            <a href="/" class="flex items-center space-x-3">
+      <header
+                class="sticky top-4 z-50 w-full max-w-7xl mx-auto flex items-center justify-between px-4 py-3 bg-[#1e293b]/80 backdrop-blur-md rounded-2xl border border-white/10 shadow-xl"
+            >
+                <a href="/" class="flex items-center space-x-3">
                 <img src="{{ url_for('static', filename='img/Logo.png') }}" alt="ExoPlanTropy Logo" class="w-7 h-7 object-contain">
                 <h1 class="text-xl font-bold text-white tracking-wider">ExoPlanTropy</h1>
             </a>
             <nav class="hidden sm:flex items-center space-x-8 text-sm font-medium">
                 <a href="/" class="text-gray-300 hover:text-white transition-colors duration-300">Home</a>
-                <a href="/about" class="text-gray-300 hover:text-white transition-colors duration-300">About Us</a>
+                <a href="/about" class="text-gray-300 hover:text-white transition-colors duration-300 ">About Us</a>
                 <a href="/ai" class="text-white border-b-2 border-white pb-1">AI</a>
             </nav>
-        </header>
+                <button
+                    id="mobile-menu-toggle"
+                    class="lg:hidden inline-flex items-center justify-center rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm font-medium text-white"
+                >
+                    Menu
+                </button>
+            </header>
 
-        <!-- Breadcrumb & Title -->
-        <div class="w-full max-w-7xl mx-auto px-4 pt-8">
-            <p class="text-sm mb-4"><a href="/" class="text-gray-400 hover:text-white transition-colors duration-300">Home</a> <span class="text-gray-400">></span> <span class="text-gray-300">AI</span></p>
-            <h2 class="text-6xl lg:text-7xl font-bold text-white tracking-wider font-[Orbitron] mb-8">Entropy</h2>
+      <div class="w-full max-w-7xl mx-auto px-4 pt-8">
+        <p class="text-sm mb-4">
+          <a
+            href="/"
+            class="text-gray-400 hover:text-white transition-colors duration-300"
+            >Home</a
+          >
+          <span class="text-gray-400">></span>
+          <span class="text-gray-300">AI</span>
+        </p>
+        <h2
+          class="text-5xl lg:text-6xl font-bold text-white tracking-wider font-[Orbitron] mb-6"
+        >
+          Entropy Assistant
+        </h2>
+        <p class="text-gray-300 max-w-3xl">
+          Build context from model predictions and ask anything about your exoplanet
+          candidates. If a Gemini key is available, Entropy responds instantly with a
+          natural-language interpretation.
+        </p>
+      </div>
+
+      <main
+        class="flex-grow flex flex-col gap-6 w-full max-w-7xl mx-auto px-4 pb-12"
+      >
+        <section
+          class="bg-[#1e293b]/50 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/10"
+        >
+          <form method="post" class="space-y-6">
+            <div class="grid md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs uppercase text-gray-400 mb-2"
+                  >Dataset</label
+                >
+                <select
+                  name="dataset_key"
+                  class="w-full bg-gray-700/50 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+                  onchange="this.form.submit()"
+                >
+                  {% for label in dataset_labels %}
+                  {% set key = dataset_label_to_key[label] %}
+                  <option value="{{ key }}" {% if key == dataset_key %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs uppercase text-gray-400 mb-2"
+                  >Top-K</label
+                >
+                <input
+                  type="number"
+                  name="top_k"
+                  min="1"
+                  max="100"
+                  value="{{ top_k }}"
+                  class="w-full bg-gray-700/50 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+                />
+              </div>
+              <div>
+                <label class="block text-xs uppercase text-gray-400 mb-2"
+                  >Model Gemini</label
+                >
+                <input
+                  type="text"
+                  name="llm_model"
+                  value="{{ llm_model }}"
+                  class="w-full bg-gray-700/50 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs uppercase text-gray-400 mb-2"
+                >Question</label
+              >
+              <textarea
+                name="prompt"
+                rows="4"
+                placeholder="Example: Explain the top three candidates from this dataset."
+                class="w-full bg-gray-700/50 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+              >{{ prompt }}</textarea>
+            </div>
+
+            <div class="flex justify-between items-center">
+              <button
+                type="submit"
+                class="bg-white hover:bg-gray-200 text-gray-900 font-semibold rounded-lg px-8 py-3 transition-colors duration-300"
+              >
+                Generate answer
+              </button>
+              <p class="text-xs text-gray-400">
+                Context is built from the default models that loaded successfully.
+              </p>
+            </div>
+          </form>
+        </section>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="space-y-3">
+          {% for category, message in messages %}
+          <div
+            class="px-4 py-3 rounded-lg border border-white/10 {% if category == 'error' %}bg-red-500/20 text-red-200{% elif category == 'warning' %}bg-yellow-500/20 text-yellow-100{% elif category == 'success' %}bg-emerald-500/20 text-emerald-100{% else %}bg-white/10 text-gray-100{% endif %}"
+          >
+            {{ message }}
+          </div>
+          {% endfor %}
         </div>
+        {% endif %}
+        {% endwith %}
 
-        <!-- Main Content -->
-        <main class="flex-grow flex flex-col w-full max-w-7xl mx-auto px-4">
-            <!-- Chat Container -->
-            <div class="flex-grow flex flex-col space-y-4 bg-[#1e293b]/50 backdrop-blur-md rounded-2xl p-6 border border-white/10 mb-4">
-                <!-- Message from AI -->
-                <div class="flex items-start space-x-4">
-                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                        <img src="{{ url_for('static', filename='img/Logo.png') }}" alt="AI" class="w-6 h-6">
-                    </div>
-                    <div class="flex-grow">
-                        <p class="text-sm text-gray-400">Entropy</p>
-                        <div class="mt-1 text-gray-200">
-                            Hello there! 👋 I'm Entropy, your AI assistant for exploring exoplanets. How can I help you today?
-                        </div>
-                    </div>
-                </div>
-            </div>
+        {% if error_message %}
+        <section class="bg-red-500/15 border border-red-400/40 text-red-100 px-5 py-4 rounded-2xl space-y-3">
+          <p class="font-semibold">{{ error_message }}</p>
+          {% if "GEMINI_API_KEY" in error_message %}
+          <div class="text-sm text-red-50/90 space-y-2">
+            <p>
+              Add an environment variable named <code class="bg-red-400/20 px-1 py-0.5 rounded">GEMINI_API_KEY</code>
+              with your Gemini API key, then restart the Flask server.
+            </p>
+            <ol class="list-decimal list-inside space-y-1">
+              <li>Open PowerShell.</li>
+              <li>Run <code class="bg-red-400/20 px-1 py-0.5 rounded">setx GEMINI_API_KEY "&lt;YOUR_API_KEY&gt;"</code>.</li>
+              <li>Close and reopen the terminal before running <code class="bg-red-400/20 px-1 py-0.5 rounded">python app.py</code>.</li>
+            </ol>
+            <p>
+              Make sure the <code class="bg-red-400/20 px-1 py-0.5 rounded">google-generativeai</code> package is installed.
+            </p>
+          </div>
+          {% endif %}
+        </section>
+        {% endif %}
 
-            <!-- Chat Input -->
-            <div class="sticky bottom-4 w-full bg-[#1e293b]/50 backdrop-blur-md rounded-xl border border-white/10 p-4">
-                <form class="flex items-center space-x-4">
-                    <input type="text" placeholder="Ask me anything about exoplanets..." 
-                           class="flex-grow bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25">
-                    <button type="submit" class="bg-white hover:bg-gray-200 text-gray-900 font-semibold rounded-lg px-6 py-3 transition-colors duration-300 flex items-center space-x-2">
-                        <span>Send</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                        </svg>
-                    </button>
-                </form>
+        {% if response_text %}
+        <section class="bg-white/10 border border-white/10 rounded-2xl p-6 shadow-lg">
+          <h3 class="text-xl font-semibold text-white mb-4">Gemini response</h3>
+          <div class="prose prose-invert max-w-none">
+            <p>{{ response_text | safe }}</p>
+          </div>
+        </section>
+        {% elif context_preview %}
+        <section class="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-5">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+              <h3 class="text-lg font-semibold text-white">Prepared context</h3>
+              <p class="text-sm text-gray-300">
+                Candidate summaries from the default models; you can copy this context even if Gemini isn’t connected yet.
+              </p>
             </div>
-        </main>
+            <button
+              id="context-copy"
+              type="button"
+              class="self-start md:self-center bg-white/80 hover:bg-white text-gray-900 font-semibold rounded-lg px-4 py-2 text-sm transition"
+              data-copied-text="Copied"
+            >
+              Copy JSON
+            </button>
+          </div>
+
+          <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 text-sm text-gray-200">
+            {% for key, value in context_preview.items() %}
+            {% if value is mapping %}
+            <li class="bg-black/40 border border-white/10 rounded-xl p-4 space-y-1">
+              <p class="font-semibold text-white">{{ key }}</p>
+              {% for metric_key, metric_value in value.items() %}
+              <p class="text-xs text-gray-300">
+                <span class="uppercase tracking-wide">{{ metric_key.replace('_', ' ') }}:</span>
+                {{ metric_value }}
+              </p>
+              {% endfor %}
+            </li>
+            {% elif value is sequence and value is not string and (value | length) > 0 %}
+            <li class="bg-black/40 border border-white/10 rounded-xl p-4">
+              <p class="font-semibold text-white">{{ key }}</p>
+              <p class="text-xs text-gray-300 mt-1">Candidate rows: {{ value | length }}</p>
+            </li>
+            {% endif %}
+            {% endfor %}
+          </ul>
+
+          <div class="relative">
+            <pre
+              id="context-json"
+              class="whitespace-pre-wrap text-xs text-gray-200 bg-black/40 rounded-xl p-4 overflow-hidden"
+            >{{ context_preview | tojson(indent=2) }}</pre>
+            <div
+              id="context-fade"
+              class="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#050b1b] via-[#050b1b]/70 to-transparent"
+            ></div>
+          </div>
+          <div class="flex justify-end">
+            <button
+              id="context-toggle"
+              type="button"
+              class="text-sm text-sky-300 hover:text-sky-100 transition"
+            >
+              Show more
+            </button>
+          </div>
+        </section>
+        {% endif %}
+      </main>
     </div>
 
+    {% if context_preview %}
     <script>
-        // Chatbot functionality can be added here
-        const form = document.querySelector('form');
-        const input = document.querySelector('input');
+      document.addEventListener("DOMContentLoaded", () => {
+        const pre = document.getElementById("context-json");
+        const toggle = document.getElementById("context-toggle");
+        const fade = document.getElementById("context-fade");
+        const copyButton = document.getElementById("context-copy");
+        if (pre && toggle) {
+          const collapsedHeight = 288; // 18rem
+          let expanded = false;
 
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (input.value.trim() !== '') {
-                // Handle message sending here
-                input.value = '';
+          const applyState = () => {
+            if (expanded) {
+              pre.style.maxHeight = "none";
+              pre.style.overflow = "visible";
+              fade?.classList.add("hidden");
+              toggle.textContent = "Show less";
+            } else {
+              pre.style.maxHeight = `${collapsedHeight}px`;
+              pre.style.overflow = "hidden";
+              fade?.classList.remove("hidden");
+              toggle.textContent = "Show more";
             }
-        });
+          };
+
+          applyState();
+
+          toggle.addEventListener("click", () => {
+            expanded = !expanded;
+            applyState();
+          });
+        }
+
+        if (copyButton && pre) {
+          copyButton.addEventListener("click", async () => {
+            try {
+              await navigator.clipboard.writeText(pre.textContent || "");
+              const original = copyButton.textContent;
+              const successText = copyButton.dataset.copiedText || "Copied";
+              copyButton.textContent = successText;
+              copyButton.disabled = true;
+              setTimeout(() => {
+                copyButton.textContent = original;
+                copyButton.disabled = false;
+              }, 2000);
+            } catch (error) {
+              console.error("Failed to copy context", error);
+            }
+          });
+        }
+      });
     </script>
-</body>
+    {% endif %}
+  </body>
 </html>

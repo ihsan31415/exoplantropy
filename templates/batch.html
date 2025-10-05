@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Batch Analysis - ExoPlanTropy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Oxanium:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <style>
+      body {
+        font-family: "Oxanium", sans-serif;
+        background-color: #0f172a;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }
+    </style>
+  </head>
+  <body
+    class="text-gray-200 antialiased overflow-x-hidden"
+    style="background-image: url('{{ url_for('static', filename='img/Starry.png') }}');"
+  >
+    <div class="relative min-h-screen flex flex-col w-full bg-black/30">
+      <!-- Header Navigation -->
+      <header
+        class="w-full max-w-7xl mx-auto flex justify-between items-center p-4 bg-[#1e293b]/50 backdrop-blur-md rounded-b-2xl border-b border-white/10"
+      >
+        <a href="/" class="flex items-center space-x-3">
+          <img
+            src="{{ url_for('static', filename='img/Logo.png') }}"
+            alt="ExoPlanTropy Logo"
+            class="w-7 h-7 object-contain"
+          />
+          <h1 class="text-xl font-bold text-white tracking-wider">
+            ExoPlanTropy
+          </h1>
+        </a>
+        <nav class="hidden sm:flex items-center space-x-8 text-sm font-medium">
+          <a
+            href="/"
+            class="text-gray-300 hover:text-white transition-colors duration-300"
+            >Home</a
+          >
+          <a
+            href="/about"
+            class="text-gray-300 hover:text-white transition-colors duration-300"
+            >About Us</a
+          >
+          <a
+            href="/ai"
+            class="text-gray-300 hover:text-white transition-colors duration-300"
+            >AI</a
+          >
+        </nav>
+      </header>
+
+      <!-- Breadcrumb & Title -->
+      <div class="w-full max-w-7xl mx-auto px-4 pt-8">
+        <p class="text-sm mb-4">
+          <a
+            href="/"
+            class="text-gray-400 hover:text-white transition-colors duration-300"
+            >Home</a
+          >
+        </p>
+        <h2
+          class="text-5xl lg:text-6xl font-bold text-white tracking-wider font-[Orbitron] mb-8"
+        >
+          Batch Prediction
+        </h2>
+      </div>
+
+      <main
+        class="flex-grow flex flex-col gap-8 items-start w-full max-w-7xl mx-auto px-4 pb-12"
+      >
+        <section
+          class="w-full bg-[#1e293b]/50 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/10"
+        >
+          <h3 class="text-2xl font-semibold text-white mb-6">
+            Run Batch Predictions
+          </h3>
+
+          {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+          <div class="space-y-3 mb-6">
+            {% for category, message in messages %}
+            <div
+              class="px-4 py-3 rounded-lg border border-white/10 {% if category == 'error' %}bg-red-500/20 text-red-200{% elif category == 'warning' %}bg-yellow-500/20 text-yellow-100{% elif category == 'success' %}bg-emerald-500/20 text-emerald-100{% else %}bg-white/10 text-gray-100{% endif %}"
+            >
+              {{ message }}
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+          {% endwith %}
+
+          {% if missing_models %}
+          <div class="mb-4 bg-yellow-500/20 border border-yellow-400/50 text-yellow-100 px-4 py-3 rounded-lg">
+            The following models were not found: {{ missing_models|join(', ') }}.
+          </div>
+          {% endif %}
+
+          <form
+            class="space-y-6"
+            method="post"
+            enctype="multipart/form-data"
+          >
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm uppercase tracking-wide text-gray-300 mb-2"
+                  >Dataset</label
+                >
+                <select
+                  name="dataset_key"
+                  class="w-full bg-gray-700/50 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+                  onchange="this.form.submit()"
+                >
+                  {% for label in dataset_labels %}
+                  {% set key = dataset_label_to_key[label] %}
+                  <option value="{{ key }}" {% if key == dataset_key %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm uppercase tracking-wide text-gray-300 mb-2"
+                  >Number of results (Top-K)</label
+                >
+                <input
+                  type="number"
+                  name="top_k"
+                  min="0"
+                  max="100"
+                  value="{{ top_k_input_value }}"
+                  class="w-full bg-gray-700/50 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+                />
+                <p class="text-xs text-gray-400 mt-2">
+                  Set this to <span class="font-semibold text-gray-200">0</span> to retrieve every prediction without truncation.
+                </p>
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm uppercase tracking-wide text-gray-300 mb-2"
+                  >Data source</label
+                >
+                <div class="flex items-center space-x-4">
+                  <label class="flex items-center space-x-2 text-sm">
+                    <input
+                      type="radio"
+                      name="data_source"
+                      value="bundled"
+                      {% if data_source == 'bundled' %}checked{% endif %}
+                    />
+                    <span>Use bundled catalog</span>
+                  </label>
+                  <label class="flex items-center space-x-2 text-sm">
+                    <input
+                      type="radio"
+                      name="data_source"
+                      value="upload"
+                      {% if data_source == 'upload' %}checked{% endif %}
+                    />
+                    <span>Upload my CSV</span>
+                  </label>
+                </div>
+                <p class="text-xs text-gray-400 mt-2">
+                  If uploading, make sure the feature columns match the training data.
+                </p>
+              </div>
+
+              <div>
+                <label class="block text-sm uppercase tracking-wide text-gray-300 mb-2"
+                  >Model</label
+                >
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-40 overflow-y-auto bg-gray-700/30 rounded-lg p-3 border border-white/10">
+                  {% for model_name in models %}
+                  <label class="flex items-center space-x-2 text-sm">
+                    <input
+                      type="checkbox"
+                      name="models"
+                      value="{{ model_name }}"
+                      class="rounded"
+                      {% if model_name in selected_models %}checked{% endif %}
+                    />
+                    <span>{{ model_name }}</span>
+                  </label>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm uppercase tracking-wide text-gray-300 mb-2"
+                  >Upload CSV</label
+                >
+                <input
+                  type="file"
+                  name="data_file"
+                  accept=".csv"
+                  class="w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-white/90 file:text-gray-900 hover:file:bg-white"
+                />
+              </div>
+            </div>
+
+            <div class="flex justify-between items-center">
+              <button
+                type="submit"
+                class="bg-white hover:bg-gray-200 text-gray-900 font-semibold rounded-lg px-8 py-3 transition-colors duration-300"
+              >
+                Run batch analysis
+              </button>
+
+              {% if download_token %}
+              <a
+                href="{{ url_for('download_predictions', token=download_token) }}"
+                class="bg-emerald-500/80 hover:bg-emerald-500 text-white font-semibold rounded-lg px-8 py-3 transition-colors duration-300"
+              >
+                Download results
+              </a>
+              {% endif %}
+            </div>
+          </form>
+
+          {% if feature_order and feature_descriptions %}
+          <div class="mt-10">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-4">
+              <div>
+                <h4 class="text-xl font-semibold text-white">Required feature list</h4>
+                <p class="text-sm text-gray-300">
+                  Use this summary when preparing a CSV or reviewing results for the {{ dataset_label }} dataset.
+                </p>
+              </div>
+            </div>
+            <div class="grid gap-3 sm:grid-cols-2">
+              {% for feature_name in feature_order %}
+              {% set explanation = feature_descriptions.get(feature_name) %}
+              {% if explanation %}
+              <article class="rounded-xl border border-white/10 bg-black/30 p-4">
+                <p class="text-sm font-semibold text-white">{{ feature_name }}</p>
+                <p class="text-xs text-gray-300 mt-1 leading-relaxed">{{ explanation }}</p>
+              </article>
+              {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+        </section>
+
+        {% if summaries %}
+        <section class="w-full space-y-6">
+          {% for model_name, rows in summaries.items() %}
+          <div class="bg-[#1e293b]/40 backdrop-blur-md rounded-2xl p-6 border border-white/10">
+            <div class="flex justify-between items-center mb-4">
+              <h4 class="text-xl font-semibold text-white">{{ model_name }}</h4>
+              <span class="text-sm text-gray-400">
+                {% if top_k is none %}
+                All candidates ({{ rows|length }})
+                {% else %}
+                Top {{ top_k }} candidates
+                {% endif %}
+              </span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left text-gray-200">
+                <thead class="uppercase text-xs text-gray-400 bg-white/5">
+                  {% if rows %}
+                  <tr>
+                    {% for key in rows[0].keys() %}
+                    <th class="px-4 py-3">{{ key.replace('_', ' ') }}</th>
+                    {% endfor %}
+                  </tr>
+                  {% endif %}
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                  {% for row in rows %}
+                  <tr>
+                    {% for value in row.values() %}
+                    <td class="px-4 py-3">{{ value }}</td>
+                    {% endfor %}
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% endfor %}
+        </section>
+        {% endif %}
+      </main>
+    </div>
+  </body>
+</html>

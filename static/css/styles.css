@@ -8,17 +8,70 @@ It's where you import Tailwind's base styles, components, and utilities.
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    color-scheme: dark;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: 'Oxanium', sans-serif;
     background-color: #0f172a;
-    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    background-size: 120% 120%;
+    transition: background-position 0.2s ease-out;
+    position: relative;
+    z-index: 0;
 }
 
 h1, h2, h3, .title {
     font-family: 'Orbitron', sans-serif;
+}
+
+.section {
+    scroll-margin-top: 6rem;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+        radial-gradient(2.2px 2.2px at 25px 35px, rgba(255, 255, 255, 0.82), transparent 58%),
+        radial-gradient(2px 2px at 75px 85px, rgba(255, 255, 255, 0.66), transparent 60%),
+        radial-gradient(1.8px 1.8px at 145px 125px, rgba(255, 255, 255, 0.55), transparent 60%),
+        radial-gradient(2.6px 2.6px at 190px 30px, rgba(255, 255, 255, 0.7), transparent 62%),
+        radial-gradient(2.1px 2.1px at 40px 140px, rgba(255, 255, 255, 0.6), transparent 60%);
+    background-size: 180px 180px, 240px 240px, 300px 300px, 220px 260px, 200px 280px;
+    opacity: 0.55;
+    animation: starTwinkle 14s linear infinite;
+}
+
+@keyframes starTwinkle {
+    0% {
+        background-position: 0 0, 0 0, 0 0;
+        opacity: 0.45;
+    }
+    50% {
+        background-position: 40px 60px, 20px 80px, -30px 50px;
+        opacity: 0.65;
+    }
+    100% {
+        background-position: 80px 120px, 40px 160px, -60px 100px;
+        opacity: 0.45;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body::before {
+        animation: none;
+    }
 }
 
 
