@@ -15,3 +15,15 @@ Columns are standardized for cross-mission comparison:
   - magnitude: Kepler, TESS, or K2 magnitude
   - mission: Mission source (KEPLER, K2, or TESS)
 See the notebook for details on column mapping and data cleaning steps.
+
+for the models:
+  - orbital_period_days: Orbital period in days
+  - transit_duration_hr: Transit duration in hours
+  - transit_depth_ppm: Transit depth in parts per million
+  - planet_radius_rearth: Planet radius in Earth radii
+  - equilibrium_temp_k: Planet equilibrium temperature in Kelvin
+  - insolation_flux_earth: Insolation flux in Earth units
+  - stellar_teff_k: Stellar effective temperature in Kelvin
+  - stellar_radius_rsun: Stellar radius in Solar radii
+  - stellar_logg_cgs: Stellar surface gravity (log g, cgs)
+  - magnitude: Kepler, TESS, or K2 magnitude
