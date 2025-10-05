@@ -58,10 +58,107 @@
                     <p class="text-gray-300 text-lg mb-8 leading-relaxed">
                         Our mission is to accelerate the discovery of new worlds and deepen our understanding of the cosmos. By automating the initial analysis, we empower astronomers to focus on the most promising candidates, bringing us one step closer to answering humanity's oldest question: Are we alone?
                     </p>
+                    {% if supervisors %}
                     <div class="mt-8 border-t border-white/10 pt-8">
-                        <h3 class="text-2xl font-semibold text-white mb-4">The Team</h3>
-                        <p class="text-gray-300 text-lg">A passionate group of developers, astronomers, and data scientists united by a shared love for the stars.</p>
+                        <h3 class="text-2xl font-semibold text-white mb-4">Supervised By</h3>
+                        <p class="text-gray-300 text-lg mb-6">We're grateful for the mentorship that keeps our exploration charted and purposeful.</p>
+
+                        <div class="space-y-10">
+                            {% for supervisor in supervisors %}
+                            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-8">
+                                {% if supervisor.photo %}
+                                <img
+                                    src="{{ url_for('static', filename=supervisor.photo) }}"
+                                    alt="{{ supervisor.name }} portrait"
+                                    class="w-50 h-32 sm:w-50 sm:h-36 object-cover"
+                                >
+                                {% else %}
+                                <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-full bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center text-xs uppercase tracking-widest text-white/60">
+                                    Photo coming soon
+                                </div>
+                                {% endif %}
+                                <div class="text-center sm:text-left max-w-2xl">
+                                    <h4 class="text-white text-2xl font-semibold">{{ supervisor.name }}</h4>
+                                    <p class="text-sky-300 text-sm uppercase tracking-widest mt-1">{{ supervisor.title }}</p>
+                                    <p class="text-gray-300 mt-4 leading-relaxed">{{ supervisor.intro }}</p>
+
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
                     </div>
+                    {% endif %}
+
+                    {% if team_members %}
+                    <div class="mt-12 border-t border-white/10 pt-8">
+                        <h3 class="text-2xl font-semibold text-white mb-4">The Team</h3>
+                        <p class="text-gray-300 text-lg mb-6">A passionate group of developers, astronomers, and data scientists united by a shared love for the stars.</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {% for member in team_members %}
+                            {% set member_photo = member.photo or 'img/team/member-placeholder.jpg' %}
+                            <div class="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm shadow-lg flex flex-col items-center text-center px-4 py-6">
+                                <div class="relative w-36 h-36 sm:w-40 sm:h-40 mb-4 rounded-full overflow-hidden border-2 border-white/20 bg-gradient-to-br from-slate-700/80 via-slate-600/60 to-slate-800/90 flex items-center justify-center">
+                                    <span class="absolute inset-0 flex items-center justify-center text-xs uppercase tracking-widest text-white/60 bg-black/20 backdrop-blur-sm transition-opacity duration-300 group-hover:bg-black/30">Upload Photo</span>
+                                    <img
+                                        src="{{ url_for('static', filename=member_photo) }}"
+                                        alt="{{ member.name }} portrait"
+                                        class="w-full h-full object-cover transition duration-500 ease-out group-hover:scale-105 opacity-0"
+                                        onload="this.classList.remove('opacity-0'); this.previousElementSibling?.classList.add('opacity-0');"
+                                        onerror="this.classList.add('hidden'); this.previousElementSibling?.classList.remove('opacity-0');"
+                                    >
+                                </div>
+                                <p class="text-white text-lg font-semibold">{{ member.name }}</p>
+                                <p class="text-sm text-gray-400">{{ member.role }}</p>
+
+                                {% if member.linkedin %}
+                                <a
+                                    href="{{ member.linkedin }}"
+                                    target="_blank"
+                                    rel="noopener"
+                                    class="mt-4 inline-flex items-center space-x-2 rounded-full border border-sky-400/60 bg-sky-500/10 px-4 py-2 text-sm font-medium text-sky-300 transition hover:bg-sky-500/20 hover:border-sky-400">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/LinkedIn_icon.svg/2048px-LinkedIn_icon.svg.png" alt="LinkedIn" class="w-5 h-5 inline-block" />
+                                    <span>LinkedIn Profile</span>
+                                </a>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if thanks_to %}
+                    <div class="mt-12 border-t border-white/10 pt-8">
+                        <h3 class="text-2xl font-semibold text-white mb-4">Thanks To</h3>
+                        <p class="text-gray-300 text-lg mb-6">We're grateful for the institutions supporting our journey through the cosmos.</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            {% for supporter in thanks_to %}
+                            <div class="flex flex-col items-center text-center rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 shadow-lg">
+                                {% if supporter.link %}
+                                <a href="{{ supporter.link }}" target="_blank" rel="noopener" class="focus:outline-none focus:ring-2 focus:ring-sky-400/80 rounded-xl">
+                                    <img
+                                        src="{{ url_for('static', filename=supporter.photo) }}"
+                                        alt="{{ supporter.name }} logo"
+                                        class="h-50 sm:h-50 object-contain mx-auto"
+                                    >
+                                </a>
+                                {% else %}
+                                <img
+                                    src="{{ url_for('static', filename=supporter.photo) }}"
+                                    alt="{{ supporter.name }} logo"
+                                    class="h-50 sm:h-50 object-contain mx-auto"
+                                >
+                                {% endif %}
+                                <p class="mt-4 text-white text-lg font-semibold">{{ supporter.name }}</p>
+                                {% if supporter.caption %}
+                                <p class="text-sm text-gray-400 mt-1">{{ supporter.caption }}</p>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
                     
                     <div class="w-24 h-1 border-b-2 border-t-2 border-gray-500 mt-12 mx-auto transform -skew-x-12"></div>
                 </div>
@@ -69,6 +166,7 @@
         </div>
     </div>
     
+    <script src="{{ url_for('static', filename='js/parallax.js') }}" defer></script>
 </body>
 </html>
 

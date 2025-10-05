@@ -110,41 +110,23 @@
           {% endif %}
 
           <form class="space-y-6" method="post">
-            <div class="grid md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm uppercase tracking-wide text-gray-300 mb-2"
-                  >Dataset</label
-                >
-                <select
-                  name="dataset_key"
-                  class="w-full bg-gray-700/50 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
-                  onchange="this.form.submit()"
-                >
-                  {% for label in dataset_labels %}
-                  {% set key = dataset_label_to_key[label] %}
-                  <option value="{{ key }}" {% if key == dataset_key %}selected{% endif %}>{{ label }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-sm uppercase tracking-wide text-gray-300 mb-2"
-                  >Models to run</label
-                >
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-40 overflow-y-auto bg-gray-700/30 rounded-lg p-3 border border-white/10">
-                  {% for model_name in models %}
-                  <label class="flex items-center space-x-2 text-sm">
-                    <input
-                      type="checkbox"
-                      name="models"
-                      value="{{ model_name }}"
-                      class="rounded"
-                      {% if model_name in selected_models %}checked{% endif %}
-                    />
-                    <span>{{ model_name }}</span>
-                  </label>
-                  {% endfor %}
-                </div>
+            <div>
+              <label class="block text-sm uppercase tracking-wide text-gray-300 mb-2"
+                >Models to run</label
+              >
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-40 overflow-y-auto bg-gray-700/30 rounded-lg p-3 border border-white/10">
+                {% for model_name in models %}
+                <label class="flex items-center space-x-2 text-sm">
+                  <input
+                    type="checkbox"
+                    name="models"
+                    value="{{ model_name }}"
+                    class="rounded"
+                    {% if model_name in selected_models %}checked{% endif %}
+                  />
+                  <span>{{ model_name }}</span>
+                </label>
+                {% endfor %}
               </div>
             </div>
 
@@ -506,5 +488,6 @@
         </div>
       </main>
     </div>
+    <script src="{{ url_for('static', filename='js/parallax.js') }}" defer></script>
   </body>
 </html>
