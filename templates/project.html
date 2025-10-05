@@ -33,7 +33,7 @@
                         <div class="bg-black/20 backdrop-blur-sm p-6 rounded-lg border border-white/10">
                             <h3 class="text-2xl font-semibold text-white mb-3">Methodology</h3>
                             <p class="text-gray-300">
-                                We utilize a Convolutional Neural Network (CNN) trained on thousands of confirmed exoplanet and false-positive light curves. The model analyzes the shape, depth, and duration of transit events to provide a classification score.
+                                We rely on a curated portfolio of tabular ML pipelines—tree ensembles (LightGBM, XGBoost, CatBoost, Gradient Boosting) and a calibrated Multilayer Perceptron—to score each candidate. Every pipeline shares a consistent preprocessing stack, cross-validation protocol, and explainability reports so their outputs can be compared side by side.
                             </p>
                         </div>
                         
@@ -41,7 +41,22 @@
                         <div class="bg-black/20 backdrop-blur-sm p-6 rounded-lg border border-white/10">
                             <h3 class="text-2xl font-semibold text-white mb-3">Data Source</h3>
                             <p class="text-gray-300">
-                                Our primary data comes from NASA's TESS mission, which is surveying almost the entire sky to find exoplanets. TESS has generated a massive public dataset, creating a historic opportunity for new discoveries.
+                                We aggregate the latest public catalogues from NASA's TESS TOI archive, the Kepler KOI list, and the extended K2 mission. Each catalogue ships with harmonised feature schemas, metadata lookups, and clean training splits to make retraining or experimentation frictionless.
+                            </p>
+                        </div>
+
+                        <!-- Supported Models Card -->
+                        <div class="bg-black/20 backdrop-blur-sm p-6 rounded-lg border border-white/10 md:col-span-2">
+                            <h3 class="text-2xl font-semibold text-white mb-3">Available Production Models</h3>
+                            <p class="text-gray-300">
+                                The web experience exposes the following pre-trained models for instant inference and comparison:
+                            </p>
+                            <ul class="mt-4 grid gap-2 text-gray-200 md:grid-cols-2">
+                                <li class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-green-400"></span> TESS&nbsp;— LightGBM, XGBoost, CatBoost, Gradient Boosting, Random Forest, MLP</li>
+                                <li class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-green-400"></span> Kepler&nbsp;— LightGBM, XGBoost, CatBoost, Gradient Boosting, Random Forest, MLP</li>
+                                <li class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-green-400"></span> K2&nbsp;— LightGBM, XGBoost, CatBoost, Gradient Boosting, Random Forest, MLP</li>
+                                <li class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-green-400"></span> Manual retraining portal — {{ available_algorithms | default(["Random Forest", "Gradient Boosting", "MLP"]) | join(", ") }}</li>
+                            </ul>
                         </div>
                     </div>
 

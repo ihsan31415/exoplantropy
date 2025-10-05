@@ -14,14 +14,14 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Streamlit secrets
-.streamlit/
-
 # Model artifacts and reports
 data/
 models/
 reports/
 outputs/
+
+# Local configuration secrets
+config/*.env
 
 # Notebooks checkpoints
 .ipynb_checkpoints/

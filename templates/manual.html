@@ -85,89 +85,424 @@
         class="flex-grow flex items-center justify-center w-full max-w-7xl mx-auto px-4"
       >
         <div
-          class="w-full max-w-3xl bg-[#1e293b]/50 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/10"
+          class="w-full max-w-4xl bg-[#1e293b]/50 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/10"
         >
           <h3 class="text-2xl font-semibold text-white mb-6">Manual Input</h3>
 
-          <!-- Search Form -->
-          <form class="space-y-6">
-            <div class="flex space-x-4">
-              <input
-                type="text"
-                placeholder="Param 1"
-                class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
-              />
-              <input
-                type="text"
-                placeholder="Param 2"
-                class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
-              />
+          {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+          <div class="space-y-3 mb-6">
+            {% for category, message in messages %}
+            <div
+              class="px-4 py-3 rounded-lg border border-white/10 {% if category == 'error' %}bg-red-500/20 text-red-200{% elif category == 'warning' %}bg-yellow-500/20 text-yellow-100{% elif category == 'success' %}bg-emerald-500/20 text-emerald-100{% else %}bg-white/10 text-gray-100{% endif %}"
+            >
+              {{ message }}
             </div>
-            <div class="flex space-x-4">
-              <input
-                type="text"
-                placeholder="Param 1"
-                class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
-              />
-              <input
-                type="text"
-                placeholder="Param 2"
-                class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
-              />
+            {% endfor %}
+          </div>
+          {% endif %}
+          {% endwith %}
+
+          {% if missing_models %}
+          <div class="mb-4 bg-yellow-500/20 border border-yellow-400/50 text-yellow-100 px-4 py-3 rounded-lg">
+            The following models are unavailable: {{ missing_models|join(', ') }}.
+          </div>
+          {% endif %}
+
+          <form class="space-y-6" method="post">
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm uppercase tracking-wide text-gray-300 mb-2"
+                  >Dataset</label
+                >
+                <select
+                  name="dataset_key"
+                  class="w-full bg-gray-700/50 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+                  onchange="this.form.submit()"
+                >
+                  {% for label in dataset_labels %}
+                  {% set key = dataset_label_to_key[label] %}
+                  <option value="{{ key }}" {% if key == dataset_key %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm uppercase tracking-wide text-gray-300 mb-2"
+                  >Models to run</label
+                >
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-40 overflow-y-auto bg-gray-700/30 rounded-lg p-3 border border-white/10">
+                  {% for model_name in models %}
+                  <label class="flex items-center space-x-2 text-sm">
+                    <input
+                      type="checkbox"
+                      name="models"
+                      value="{{ model_name }}"
+                      class="rounded"
+                      {% if model_name in selected_models %}checked{% endif %}
+                    />
+                    <span>{{ model_name }}</span>
+                  </label>
+                  {% endfor %}
+                </div>
+              </div>
             </div>
-            <div class="flex space-x-4">
-              <input
-                type="text"
-                placeholder="Param 1"
-                class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
-              />
-              <input
-                type="text"
-                placeholder="Param 2"
-                class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
-              />
+
+            <div class="grid gap-4 md:grid-cols-2">
+              {% for feature in features %}
+              <div>
+                <label class="block text-sm text-gray-200 font-medium">{{ feature.name }}</label>
+                {% if feature.description %}
+                <p class="text-xs text-gray-400 mt-1 leading-relaxed">
+                  {{ feature.description }}
+                </p>
+                {% endif %}
+                <input
+                  type="number"
+                  step="any"
+                  name="feature_{{ feature.name }}"
+                  value="{{ request.form.get('feature_' ~ feature.name, '%.6f'|format(feature.median)) }}"
+                  class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
+                />
+                <p class="text-xs text-gray-500 mt-1">σ ≈ {{ '%.4f'|format(feature.std) }}</p>
+              </div>
+              {% endfor %}
             </div>
-            <div class="flex space-x-4">
-              <input
-                type="text"
-                placeholder="Param 1"
-                class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
-              />
-              <input
-                type="text"
-                placeholder="Param 2"
-                class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
-              />
-            </div>
+
             <div class="flex justify-between items-center">
               <button
                 type="submit"
                 class="bg-white hover:bg-gray-200 text-gray-900 font-semibold rounded-lg px-8 py-3 transition-colors duration-300"
               >
-                Launch !
+                Run prediction
               </button>
 
-              <div class="flex items-center space-x-4">
-                <button
-                  type="button"
-                  class="bg-gray-700/80 hover:bg-gray-600/80 text-white font-semibold rounded-lg px-6 py-3 transition-colors duration-300 flex items-center space-x-2"
-                >
-                  <span>Entropy</span>
-                  <img
-                    src="{{ url_for('static', filename='img/Logo.png') }}"
-                    alt="Entropy Logo"
-                    class="w-5 h-5"
-                  />
-                </button>
-                <button
-                  type="button"
-                  class="bg-gray-700/80 hover:bg-gray-600/80 w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-transform hover:scale-105"
-                >
-                  i
-                </button>
+              <div class="flex items-center space-x-4 text-sm text-gray-300">
+                <span>Default values are filled using feature medians from the {{ dataset_label }} dataset.</span>
               </div>
             </div>
           </form>
+
+          {% if predictions %}
+          <div class="mt-10">
+            <h4 class="text-xl font-semibold text-white mb-4">Prediction results</h4>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left text-gray-200">
+                <thead class="uppercase text-xs text-gray-400 bg-white/5">
+                  <tr>
+                    <th class="px-4 py-3">Model</th>
+                    <th class="px-4 py-3">Candidate probability</th>
+                    <th class="px-4 py-3">Prediction</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                  {% for item in predictions %}
+                  <tr>
+                    <td class="px-4 py-3 font-medium">{{ item.model }}</td>
+                    <td class="px-4 py-3">{{ '%.3f'|format(item.probability) }}</td>
+                    <td class="px-4 py-3">
+                      <span
+                        class="px-3 py-1 rounded-full text-xs font-semibold {% if item.label == 'confirmed' %}bg-emerald-500/20 text-emerald-200{% else %}bg-red-500/20 text-red-200{% endif %}"
+                        >{{ item.label }}</span
+                      >
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% if transit_data %}
+          <div class="mt-12 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
+              <h4 class="text-xl font-semibold text-white">Exoplanet transit simulation</h4>
+              <div class="text-sm text-gray-300 space-x-2 whitespace-nowrap">
+                <span>Orbital period ≈ {{ (transit_data.period_hours / 24)|round(2) }} days</span>
+                <span>•</span>
+                <span>Transit duration ≈ {{ transit_data.duration_hours|round(2) }} hours</span>
+                <span>•</span>
+                <span>Depth ≈ {{ (transit_data.depth * 100)|round(2) }}%</span>
+              </div>
+            </div>
+            <p class="text-sm text-gray-400">
+              This animation shows a side-on view of the planet orbiting its star. When the planet moves in front, it appears larger and casts a shadow across the stellar disk. As it swings behind the star, it dims and shrinks.
+            </p>
+            <div class="bg-[#0f172a]/60 border border-white/10 rounded-2xl p-6 backdrop-blur-md shadow-xl">
+              <canvas
+                id="transit-canvas"
+                width="900"
+                height="540"
+                class="w-full rounded-xl border border-white/10 bg-[#020617]"
+              ></canvas>
+            </div>
+            <div class="bg-[#0f172a]/60 border border-white/10 rounded-2xl p-6 backdrop-blur-md shadow-xl">
+              <div class="flex flex-col gap-4">
+                <div class="flex flex-wrap items-center gap-3">
+                  <button
+                    id="transit-play"
+                    type="button"
+                    class="flex items-center gap-2 bg-sky-500/80 hover:bg-sky-400 text-white font-semibold rounded-lg px-5 py-2 transition"
+                  >
+                    Pause
+                  </button>
+                  <button
+                    id="transit-reset"
+                    type="button"
+                    class="flex items-center gap-2 bg-slate-700/80 hover:bg-slate-600 text-white font-semibold rounded-lg px-5 py-2 transition"
+                  >
+                    Reset
+                  </button>
+                  <span class="text-sm text-gray-300">Playback speed:</span>
+                  <input
+                    id="transit-speed"
+                    type="range"
+                    min="0.2"
+                    max="3"
+                    step="0.1"
+                    value="1"
+                    class="w-48 accent-sky-400"
+                  />
+                  <span id="transit-speed-label" class="text-sm text-gray-300">1.0×</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              const transitData = {{ transit_data | tojson }};
+              if (!transitData) {
+                return;
+              }
+
+              const canvas = document.getElementById("transit-canvas");
+              const playButton = document.getElementById("transit-play");
+              const resetButton = document.getElementById("transit-reset");
+              const speedSlider = document.getElementById("transit-speed");
+              const speedLabel = document.getElementById("transit-speed-label");
+              if (!canvas || !playButton || !resetButton || !speedSlider || !speedLabel) {
+                return;
+              }
+
+              const ctx = canvas.getContext("2d");
+              const backgroundStars = Array.from({ length: 70 }).map((_, index) => {
+                const offset = (index * 137) % canvas.width;
+                const offsetY = (index * 199 + 37) % canvas.height;
+                const size = (index % 4) * 0.4 + 0.4;
+                return { x: offset, y: offsetY, size };
+              });
+
+              // Base configuration derived from transit data, scaled to canvas.
+              const starRadiusBase = Math.min(canvas.height, canvas.width) * 0.12;
+              const starRadius = Math.max(60, starRadiusBase);
+              const planetRadiusBase = Math.max(14, starRadius * (transitData.radius_ratio || 0.12) * 0.95);
+              const orbitRadius = Math.max(
+                starRadius * 2.2,
+                starRadius * (transitData.semi_major_ratio ? transitData.semi_major_ratio * 0.35 : 2.8)
+              );
+              const impactFactor = Math.min(0.9, Math.max(0.0, transitData.impact_parameter || 0));
+
+              const config = {
+                width: canvas.width,
+                height: canvas.height,
+                starX: canvas.width / 2,
+                starY: canvas.height / 2,
+                starRadius,
+                planetRadius: planetRadiusBase,
+                orbitRadius,
+                baseSpeed: (Math.PI * 2) / 12, // one full orbit every 12 seconds of simulation time
+                impactFactor,
+              };
+
+              let playing = true;
+              let angle = 0;
+              let speedMultiplier = 1;
+              let lastTimestamp = null;
+              let animationFrameId = null;
+
+              function drawBackground() {
+                const gradient = ctx.createLinearGradient(0, 0, 0, config.height);
+                gradient.addColorStop(0, "#0a0e27");
+                gradient.addColorStop(1, "#141b41");
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, config.width, config.height);
+
+                ctx.fillStyle = "rgba(255, 255, 255, 0.65)";
+                backgroundStars.forEach(({ x, y, size }) => {
+                  ctx.beginPath();
+                  ctx.arc(x, y, size, 0, Math.PI * 2);
+                  ctx.fill();
+                });
+              }
+
+              function drawStar() {
+                // outer glow
+                const glow = ctx.createRadialGradient(
+                  config.starX,
+                  config.starY,
+                  0,
+                  config.starX,
+                  config.starY,
+                  config.starRadius * 2.2
+                );
+                glow.addColorStop(0, "rgba(255, 255, 255, 0.8)");
+                glow.addColorStop(0.25, "rgba(255, 215, 0, 0.5)");
+                glow.addColorStop(1, "rgba(255, 165, 0, 0)");
+                ctx.fillStyle = glow;
+                ctx.beginPath();
+                ctx.arc(config.starX, config.starY, config.starRadius * 2.2, 0, Math.PI * 2);
+                ctx.fill();
+
+                const starGradient = ctx.createRadialGradient(
+                  config.starX,
+                  config.starY,
+                  0,
+                  config.starX,
+                  config.starY,
+                  config.starRadius
+                );
+                starGradient.addColorStop(0, "#ffffff");
+                starGradient.addColorStop(0.4, "#ffe17a");
+                starGradient.addColorStop(1, "#ff9d3f");
+                ctx.fillStyle = starGradient;
+                ctx.beginPath();
+                ctx.arc(config.starX, config.starY, config.starRadius, 0, Math.PI * 2);
+                ctx.fill();
+
+                const highlight = ctx.createRadialGradient(
+                  config.starX - config.starRadius * 0.3,
+                  config.starY - config.starRadius * 0.3,
+                  0,
+                  config.starX,
+                  config.starY,
+                  config.starRadius * 0.8
+                );
+                highlight.addColorStop(0, "rgba(255, 255, 255, 0.85)");
+                highlight.addColorStop(1, "rgba(255, 255, 255, 0)");
+                ctx.fillStyle = highlight;
+                ctx.beginPath();
+                ctx.arc(config.starX, config.starY, config.starRadius, 0, Math.PI * 2);
+                ctx.fill();
+              }
+
+              function drawPlanet(positionAngle) {
+                const planetDepth = Math.sin(positionAngle);
+                const isInFront = planetDepth >= 0;
+                const baseScale = isInFront ? 0.55 + planetDepth * 0.45 : 0.55 + planetDepth * 0.2;
+                const scaledRadius = config.planetRadius * Math.max(0.25, baseScale);
+                const planetX = config.starX + Math.cos(positionAngle) * config.orbitRadius;
+                const verticalTilt = config.orbitRadius * 0.12 * (config.impactFactor || 0);
+                const planetY = config.starY + Math.sin(positionAngle) * verticalTilt;
+
+                const drawPlanetBody = (alphaScale) => {
+                  const planetGlow = ctx.createRadialGradient(
+                    planetX,
+                    planetY,
+                    0,
+                    planetX,
+                    planetY,
+                    scaledRadius * 1.6
+                  );
+                  planetGlow.addColorStop(0, `rgba(74, 144, 226, ${0.65 * alphaScale})`);
+                  planetGlow.addColorStop(1, "rgba(74, 144, 226, 0)");
+
+                  ctx.fillStyle = planetGlow;
+                  ctx.beginPath();
+                  ctx.arc(planetX, planetY, scaledRadius * 1.6, 0, Math.PI * 2);
+                  ctx.fill();
+
+                  const planetGradient = ctx.createRadialGradient(
+                    planetX - scaledRadius * 0.3,
+                    planetY - scaledRadius * 0.3,
+                    0,
+                    planetX,
+                    planetY,
+                    scaledRadius
+                  );
+                  planetGradient.addColorStop(0, `rgba(132, 190, 255, ${0.85 * alphaScale})`);
+                  planetGradient.addColorStop(0.45, `rgba(78, 137, 220, ${0.9 * alphaScale})`);
+                  planetGradient.addColorStop(1, `rgba(30, 74, 106, ${0.95 * alphaScale})`);
+
+                  ctx.fillStyle = planetGradient;
+                  ctx.beginPath();
+                  ctx.arc(planetX, planetY, scaledRadius, 0, Math.PI * 2);
+                  ctx.fill();
+                };
+
+                const overlapDistance = Math.abs(planetX - config.starX);
+                const overlapping = overlapDistance < config.starRadius + scaledRadius && isInFront;
+
+                if (!isInFront) {
+                  drawPlanetBody(0.4);
+                }
+
+                drawStar();
+
+                if (overlapping) {
+                  ctx.fillStyle = "rgba(0, 0, 0, 0.55)";
+                  ctx.beginPath();
+                  ctx.arc(planetX, planetY, scaledRadius * 0.92, 0, Math.PI * 2);
+                  ctx.fill();
+                }
+
+                if (isInFront) {
+                  drawPlanetBody(1.0);
+                }
+              }
+
+              function drawScene() {
+                ctx.clearRect(0, 0, config.width, config.height);
+                drawBackground();
+                drawPlanet(angle);
+              }
+
+              function animate(timestamp) {
+                if (lastTimestamp === null) {
+                  lastTimestamp = timestamp;
+                }
+                const delta = (timestamp - lastTimestamp) / 1000;
+                lastTimestamp = timestamp;
+
+                if (playing) {
+                  const depth = Math.sin(angle);
+                  const depthSpeed = 0.9 + depth * 0.3;
+                  angle = (angle + config.baseSpeed * speedMultiplier * depthSpeed * delta) % (Math.PI * 2);
+                }
+
+                drawScene();
+                animationFrameId = window.requestAnimationFrame(animate);
+              }
+
+              playButton.addEventListener("click", () => {
+                playing = !playing;
+                playButton.textContent = playing ? "Pause" : "Play";
+              });
+
+              resetButton.addEventListener("click", () => {
+                angle = 0;
+                playing = false;
+                lastTimestamp = null;
+                playButton.textContent = "Play";
+                drawScene();
+              });
+
+              speedSlider.addEventListener("input", (event) => {
+                const value = Number.parseFloat(event.target.value) || 1;
+                speedMultiplier = value;
+                speedLabel.textContent = `${value.toFixed(1)}×`;
+              });
+
+              window.addEventListener("beforeunload", () => {
+                if (animationFrameId) {
+                  window.cancelAnimationFrame(animationFrameId);
+                }
+              });
+
+              drawScene();
+              animationFrameId = window.requestAnimationFrame(animate);
+            });
+          </script>
+          {% endif %}
+          {% endif %}
         </div>
       </main>
     </div>

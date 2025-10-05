@@ -5,8 +5,9 @@ matplotlib
 seaborn
 joblib
 imbalanced-learn
-streamlit
 google-generativeai
 xgboost
 lightgbm
 catboost
+Flask
+python-dotenv

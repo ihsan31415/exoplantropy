@@ -1,129 +1,605 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - ExoPlanTropy</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Oxanium:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <style>
-        body {
-            font-family: 'Oxanium', sans-serif;
-            background-color: #0f172a;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
-        .dropdown-menu {
-            transition: all 0.3s ease-in-out;
-        }
-    </style>
-</head>
-<body class="text-gray-200 antialiased overflow-x-hidden" style="background-image: url('{{ url_for('static', filename='img/Starry.png') }}');">
-
-    <div class="relative min-h-screen flex flex-col w-full bg-black/30">
-        <!-- Header Navigation -->
-        <header class="w-full max-w-7xl mx-auto flex justify-between items-center p-4 bg-[#1e293b]/50 backdrop-blur-md rounded-b-2xl border-b border-white/10">
-            <a href="/" class="flex items-center space-x-3">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ExoPlanTropy Explorer</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Oxanium:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+        <style>
+            body {
+                font-family: "Oxanium", sans-serif;
+                background-color: #0f172a;
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+            }
+        </style>
+    </head>
+    <body
+        class="text-gray-200 antialiased overflow-x-hidden"
+        style="background-image: url('{{ url_for('static', filename='img/Starry.png') }}');"
+    >
+        <div class="relative min-h-screen flex flex-col w-full bg-black/40">
+            <header
+                class="sticky top-4 z-50 w-full max-w-7xl mx-auto flex items-center justify-between px-4 py-3 bg-[#1e293b]/80 backdrop-blur-md rounded-2xl border border-white/10 shadow-xl"
+            >
+                <a href="/" class="flex items-center space-x-3">
                 <img src="{{ url_for('static', filename='img/Logo.png') }}" alt="ExoPlanTropy Logo" class="w-7 h-7 object-contain">
                 <h1 class="text-xl font-bold text-white tracking-wider">ExoPlanTropy</h1>
             </a>
             <nav class="hidden sm:flex items-center space-x-8 text-sm font-medium">
                 <a href="/" class="text-white border-b-2 border-white pb-1">Home</a>
-                <a href="/about" class="text-gray-300 hover:text-white transition-colors duration-300">About us</a>
+                <a href="/about" class="text-gray-300 hover:text-white transition-colors duration-300">About Us</a>
                 <a href="/ai" class="text-gray-300 hover:text-white transition-colors duration-300">AI</a>
             </nav>
-        </header>
+                <button
+                    id="mobile-menu-toggle"
+                    class="lg:hidden inline-flex items-center justify-center rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm font-medium text-white"
+                >
+                    Menu
+                </button>
+            </header>
 
-        <!-- Breadcrumb & Title -->
-        <div class="w-full max-w-7xl mx-auto px-4 pt-8">
-            <p class="text-sm mb-4"><span class="text-gray-300">Home</span> <span class="text-gray-400">></span></p>
-            <h2 class="text-6xl lg:text-7xl font-bold text-white tracking-wider font-[Orbitron] mb-4">ExoPlanTropy</h2>
-            <p class="text-lg text-gray-300 mb-8">in search of new world</p>
-        </div>
-
-        <!-- Main Content -->
-        <main class="flex-grow flex items-start w-full max-w-7xl mx-auto px-4">
-            <div class="grid md:grid-cols-2 gap-8 items-start w-full">
-                <!-- Left Column -->
-                <div class="flex flex-col items-start">
-                    <!-- Analysis Dropdown Section -->
-                    <div class="relative" id="analysis-dropdown-container">
-                        <button id="analysis-button" class="w-64 text-left bg-gray-700/50 hover:bg-gray-600/50 border border-white/20 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300 flex items-center justify-between">
-                            <span>Start New Analysis</span>
-                             <svg class="w-4 h-4 transition-transform" id="dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        
-                        <!-- Dropdown Menu with new style -->
-                        <div id="dropdown-menu" class="dropdown-menu absolute mt-2 w-64 space-y-2 hidden opacity-0 -translate-y-2">
-                            <a href="/manual" class="block text-left bg-gray-700/50 hover:bg-gray-600/50 border border-white/20 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300">Manual input</a>
-                            <a href="/batch" class="block text-left bg-gray-700/50 hover:bg-gray-600/50 border border-white/20 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300">Batch input (CSV)</a>
-                            <a href="/search" class="block text-left bg-gray-700/50 hover:bg-gray-600/50 border border-white/20 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition duration-300">Search Target</a>
-                        </div>
-                    </div>
-
-                    <div class="w-24 h-1 border-b-2 border-t-2 border-gray-500 mt-12 transform -skew-x-12"></div>
-                </div>
-
-                <!-- Right Column -->
-                <div class="flex justify-end items-end mt-64 mr-32">
-                    <div class="flex flex-col space-y-4">
-                        <h3 class="text-xl font-bold mb-2 text-white">confused?</h3>
-                        <p class="text-gray-300 mb-6">Let Entropy do the work!</p>
-                        <div class="flex justify-center space-x-4">
-                            <button class="bg-white hover:bg-gray-200 text-gray-900 font-bold py-2 px-6 rounded-full flex items-center space-x-2 transition-transform hover:scale-105">
-                                <span>Entropy</span>
-                                <img src="{{ url_for('static', filename='img/Logo.png') }}" alt="Entropy Logo" class="w-5 h-5 brightness-0" style="filter: brightness(0);">
-                            </button>
-                            <button class="bg-gray-700/80 hover:bg-gray-600/80 w-10 h-10 rounded-full flex items-center justify-center font-bold transition-transform hover:scale-105">
-                                i
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <div
+                id="mobile-menu"
+                class="lg:hidden hidden w-full max-w-7xl mx-auto px-4 mt-2"
+            >
+                <div class="space-y-2 rounded-2xl border border-white/10 bg-[#1e293b]/80 p-4 text-sm">
+                    <a href="#overview" class="block py-2 text-gray-200">Overview</a>
+                    <a href="#mission" class="block py-2 text-gray-200">Mission</a>
+                    <a href="#datasets" class="block py-2 text-gray-200">Datasets</a>
+                    <a href="#workflow" class="block py-2 text-gray-200">Workflow</a>
+                    <a href="#ai" class="block py-2 text-gray-200">AI Assistant</a>
+                    <a href="#learn" class="block py-2 text-gray-200">Learn</a>
+                    <a href="/manual" class="block py-2 text-sky-200">Try Manual Lab</a>
+                    <a href="/ai" class="block py-2 text-sky-200">Launch AI</a>
                 </div>
             </div>
-        </main>
-    </div>
 
-    <script>
-        const analysisButton = document.getElementById('analysis-button');
-        const dropdownMenu = document.getElementById('dropdown-menu');
-        const dropdownContainer = document.getElementById('analysis-dropdown-container');
-        const dropdownArrow = document.getElementById('dropdown-arrow');
+            <main class="flex-grow w-full max-w-7xl mx-auto px-4 pb-16 space-y-24">
+                                <section
+                                    id="overview"
+                                    class="section min-h-[70vh] flex items-center justify-start pt-20"
+                                >
+                                    <div class="space-y-6 max-w-3xl text-left w-full">
+                                        <span class="inline-flex items-center rounded-full bg-white/10 px-4 py-1 text-xs uppercase tracking-[0.3em] text-sky-200"
+                                            >Explore new worlds together</span
+                                        >
+                                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">
+                                            ExoPlanTropy
+                                        </h1>
+                                        <p class="text-base sm:text-lg text-gray-300">
+                                            Follow a simple workflow to get acquainted with Kepler, K2, and TESS data, run trained models, then ask the AI Entropy to help interpret the results.
+                                        </p>
+                                        <div class="flex flex-wrap justify-start gap-3">
+                                            <a
+                                                href="#mission"
+                                                class="inline-flex items-center rounded-lg bg-white text-gray-900 px-5 py-3 font-semibold transition hover:bg-gray-200"
+                                            >
+                                                Our Mission
+                                            </a>
+                                            <a
+                                                href="/manual"
+                                                class="inline-flex items-center rounded-lg border border-white/40 bg-transparent px-5 py-3 font-semibold text-white transition hover:bg-white/10"
+                                            >
+                                                Try Manual Lab
+                                            </a>
+                                        </div>
+                                    </div>
+                                </section>
 
-        analysisButton.addEventListener('click', (event) => {
-            event.stopPropagation();
-            const isOpen = !dropdownMenu.classList.contains('hidden');
-            if (!isOpen) {
-                dropdownMenu.classList.remove('hidden');
-                dropdownArrow.style.transform = 'rotate(180deg)';
-                setTimeout(() => {
-                    dropdownMenu.classList.remove('opacity-0', '-translate-y-2');
-                }, 10);
-            } else {
-                dropdownMenu.classList.add('opacity-0', '-translate-y-2');
-                dropdownArrow.style.transform = 'rotate(0deg)';
-                setTimeout(() => {
-                    dropdownMenu.classList.add('hidden');
-                }, 300);
-            }
-        });
+                                <section class="section pt-4">
+                                    <div class="space-y-6 max-w-6xl mx-auto">
+                                        <div class="flex flex-wrap justify-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-sky-200">
+                                            <span class="rounded-full border border-sky-200/30 px-3 py-1">Kepler</span>
+                                            <span class="rounded-full border border-sky-200/30 px-3 py-1">K2</span>
+                                            <span class="rounded-full border border-sky-200/30 px-3 py-1">TESS</span>
+                                        </div>
+                                        <div class="grid gap-4 sm:grid-cols-3">
+                                            <article class="rounded-2xl border border-white/10 bg-[#1e293b]/70 p-4">
+                                                <h2 class="text-lg font-semibold text-white">Learn the signals</h2>
+                                                <p class="mt-2 text-sm text-gray-300">
+                                                    Transit depth, orbital period, and stellar noise are introduced in plain language.
+                                                </p>
+                                            </article>
+                                            <article class="rounded-2xl border border-white/10 bg-[#1e293b]/70 p-4">
+                                                <h2 class="text-lg font-semibold text-white">Experiment safely</h2>
+                                                <p class="mt-2 text-sm text-gray-300">
+                                                    The manual form provides default median values so you can experiment freely.
+                                                </p>
+                                            </article>
+                                            <article class="rounded-2xl border border-white/10 bg-[#1e293b]/70 p-4">
+                                                <h2 class="text-lg font-semibold text-white">Share the story</h2>
+                                                <p class="mt-2 text-sm text-gray-300">
+                                                    AI Entropy turns numbers into stories you can share with research teams or the community.
+                                                </p>
+                                            </article>
+                                        </div>
+                                        <div class="rounded-2xl border border-sky-300/40 bg-sky-300/10 px-5 py-4 text-sky-100 text-sm">
+                                            <strong class="block text-white">Three quick steps:</strong>
+                                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-2 text-center sm:text-left">
+                                                <span>1. Select your favorite dataset (TESS, Kepler, or K2).</span>
+                                                <span>2. Fill in values manually or upload your CSV.</span>
+                                                <span>3. Compare probabilities and request an AI summary.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
 
-        window.addEventListener('click', (event) => {
-            if (!dropdownContainer.contains(event.target)) {
-                if (!dropdownMenu.classList.contains('hidden')) {
-                    dropdownMenu.classList.add('opacity-0', '-translate-y-2');
-                    dropdownArrow.style.transform = 'rotate(0deg)';
-                    setTimeout(() => {
-                        dropdownMenu.classList.add('hidden');
-                    }, 300);
-                }
-            }
-        });
-    </script>
-</body>
+                        <section id="mission" class="section">
+                            <div class="space-y-6">
+                                <span class="text-sm uppercase tracking-[0.3em] text-sky-200">Our mission</span>
+                                <h2 class="text-3xl sm:text-4xl font-bold text-white max-w-3xl">
+                                    A concise roadmap that explains who it serves and how it delivers impact
+                                </h2>
+                                <p class="text-gray-300 max-w-3xl">
+                                    We aim to provide a comprehensive and user-friendly platform for all users.
+                                </p>
+                                <div class="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
+                                    <article class="rounded-2xl border border-white/10 bg-[#1e293b]/70 p-4">
+                                        <h3 class="text-lg font-semibold text-white">People we had in mind</h3>
+                                        <p class="mt-2 text-sm text-gray-300">
+                                            Researchers, students, and self-learners eager to understand how astronomical data is transformed into new planet discoveries.
+                                        </p>
+                                    </article>
+                                    <article class="rounded-2xl border border-white/10 bg-[#1e293b]/70 p-4">
+                                        <h3 class="text-lg font-semibold text-white">Core experience</h3>
+                                        <p class="mt-2 text-sm text-gray-300">
+                                            A web platform that hosts trained ML models and visual tools to analyze NASA data and discover exoplanet candidates.
+                                        </p>
+                                    </article>
+                                    <article class="rounded-2xl border border-white/10 bg-[#1e293b]/70 p-4">
+                                        <h3 class="text-lg font-semibold text-white">Ideal moments</h3>
+                                        <p class="mt-2 text-sm text-gray-300">
+                                            Learning sessions, research experiments, or when evaluating new data from the Kepler, K2, and TESS missions.
+                                        </p>
+                                    </article>
+                                    <article class="rounded-2xl border border-white/10 bg-[#1e293b]/70 p-4">
+                                        <h3 class="text-lg font-semibold text-white">Where it lives</h3>
+                                        <p class="mt-2 text-sm text-gray-300">
+                                            Everything runs in your browser—no heavy installations.
+                                        </p>
+                                    </article>
+                                    <article class="rounded-2xl border border-white/10 bg-[#1e293b]/70 p-4">
+                                        <h3 class="text-lg font-semibold text-white">Impact</h3>
+                                        <p class="mt-2 text-sm text-gray-300">
+                                            Proper feature engineering enhances model accuracy and helps the scientific community focus on promising planetary signals.
+                                        </p>
+                                    </article>
+                                    <article class="rounded-2xl border border-white/10 bg-[#1e293b]/70 p-4">
+                                        <h3 class="text-lg font-semibold text-white">Getting started</h3>
+                                        <p class="mt-2 text-sm text-gray-300">
+                                            Choose a dataset, fill in or upload data, run the model, review probabilities, and ask the AI for a summary of next steps.
+                                        </p>
+                                    </article>
+                                </div>
+                            </div>
+                        </section>
+
+                <section id="datasets" class="section">
+                    <div class="space-y-8">
+                        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                            <div class="space-y-2">
+                                <span class="text-sm uppercase tracking-[0.3em] text-sky-200">Datasets</span>
+                                <h2 class="text-3xl font-bold text-white">Choose a telescope catalogue to explore</h2>
+                                <p class="text-gray-300 max-w-2xl">
+                                    Click the cards below to switch the active dataset. We load feature previews and compute basic statistics to help you quickly get acquainted with the unique patterns of each mission.
+                                </p>
+                            </div>
+                            <a
+                                href="/batch"
+                                class="inline-flex items-center rounded-lg border border-white/40 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
+                            >
+                                upload your own data
+                            </a>
+                        </div>
+
+                        {% set dataset_summaries = {
+                            'tess': 'Close star survey by TESS, ideal for short orbital periods.',
+                            'kepler': 'Kepler mission stared at one patch of sky for years for subtle signals.',
+                            'k2': 'K2 expands Kepler\'s search in various directions, rich in stellar variety.'
+                        } %}
+                        {% set dataset_highlights = {
+                            'tess': 'fast detection of new candidates ready for human verification.',
+                            'kepler': 'Provides a large archive for training planet vs false positive classification.',
+                            'k2': 'Great for learning to handle noise and crowd-sourced collaboration.'
+                        } %}
+
+                        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                            {% for label in dataset_labels %}
+                            {% set key = dataset_label_to_key[label] %}
+                            <a
+                                href="{{ url_for('index', dataset=key) }}#datasets"
+                                class="group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-[#1e293b]/70 p-5 transition hover:border-sky-300/60 hover:bg-[#1b2542]/90"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="text-xs uppercase tracking-[0.25em] text-sky-200">{{ key | upper }}</p>
+                                        <h3 class="mt-2 text-xl font-semibold text-white">{{ label }}</h3>
+                                    </div>
+                                    {% if key == dataset_key %}
+                                    <span class="rounded-full bg-sky-300/20 px-3 py-1 text-xs font-semibold text-sky-200">Selected</span>
+                                    {% endif %}
+                                </div>
+                                <p class="mt-3 text-sm text-gray-300">{{ dataset_summaries[key] }}</p>
+                                <p class="mt-4 text-xs font-semibold uppercase tracking-[0.25em] text-sky-100">
+                                    Highlight
+                                </p>
+                                <p class="text-sm text-gray-200">{{ dataset_highlights[key] }}</p>
+                                <span class="mt-6 inline-flex items-center text-xs font-semibold text-sky-200">View preview →</span>
+                            </a>
+                            {% endfor %}
+                        </div>
+
+                        <div class="grid gap-6 lg:grid-cols-2">
+                            <div class="rounded-3xl border border-white/10 bg-[#1e293b]/70 p-6">
+                                <h3 class="text-xl font-semibold text-white">Currently reviewing: {{ dataset_label }}</h3>
+                                <p class="mt-2 text-sm text-gray-300">
+                                    We have loaded <span class="font-semibold text-sky-200">{{ model_count }}</span> trained models for this dataset. Use the following median and standard deviation values as references when filling out the manual form.
+                                </p>
+                                <div class="mt-4 overflow-hidden rounded-2xl border border-white/10">
+                                    <table class="min-w-full divide-y divide-white/10 text-sm">
+                                        <thead class="bg-white/5 text-xs uppercase tracking-widest text-gray-300">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left">Feature</th>
+                                                <th class="px-4 py-3 text-right">Median</th>
+                                                <th class="px-4 py-3 text-right">Mean</th>
+                                                <th class="px-4 py-3 text-right">Std</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-white/5">
+                                            {% for feature in feature_preview %}
+                                            <tr class="hover:bg-white/5">
+                                                <td class="px-4 py-2 text-gray-200">{{ feature['index'] }}</td>
+                                                <td class="px-4 py-2 text-right text-gray-100">{{ feature['median'] | round(3) }}</td>
+                                                <td class="px-4 py-2 text-right text-gray-100">{{ feature['mean'] | round(3) }}</td>
+                                                <td class="px-4 py-2 text-right text-gray-100">{{ feature['std'] | round(3) }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="rounded-3xl border border-white/10 bg-sky-300/10 p-6 text-sky-100">
+                                <h3 class="text-xl font-semibold text-white">What do these numbers mean?</h3>
+                                <ul class="mt-4 space-y-3 text-sm">
+                                    <li class="flex items-start gap-3">
+                                        <span class="mt-1 h-2 w-2 rounded-full bg-white"></span>
+                                        <span><strong>Median</strong> helps you choose realistic starting values when a feature isn’t available.</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <span class="mt-1 h-2 w-2 rounded-full bg-white"></span>
+                                        <span><strong>Mean</strong> shows the overall trend, perfect for spotting how extreme your input is.</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <span class="mt-1 h-2 w-2 rounded-full bg-white"></span>
+                                        <span><strong>Std</strong> (standard deviation) tells you how much samples vary around the average.</span>
+                                    </li>
+                                </ul>
+                                <p class="mt-4 text-sm">
+                                    Use all three together for basic feature engineering—for example, normalizing new data before uploading it.
+                                </p>
+                            </div>
+                        </div>
+
+                        {% if feature_order and feature_descriptions %}
+                        <div class="mt-8 rounded-3xl border border-white/10 bg-[#1e293b]/60 p-6">
+                            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3 mb-4">
+                                <div>
+                                    <h3 class="text-xl font-semibold text-white">Feature glossary for {{ dataset_label }}</h3>
+                                    <p class="text-sm text-gray-300">Quick explanations so you know what each model feature represents.</p>
+                                </div>
+                            </div>
+                            <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                                {% for feature_name in feature_order %}
+                                {% set explanation = feature_descriptions.get(feature_name) %}
+                                {% if explanation %}
+                                <article class="rounded-2xl border border-white/10 bg-black/30 p-4">
+                                    <p class="text-sm font-semibold text-white">{{ feature_name }}</p>
+                                    <p class="text-xs text-gray-300 mt-1 leading-relaxed">{{ explanation }}</p>
+                                </article>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <section id="workflow" class="section">
+                    <div class="space-y-6">
+                        <span class="text-sm uppercase tracking-[0.3em] text-sky-200">Guided workflow</span>
+                        <h2 class="text-3xl font-bold text-white max-w-3xl">
+                            Follow the beginner-friendly flow from question to insight
+                        </h2>
+                        <div class="grid gap-6 md:grid-cols-2">
+                            <article class="rounded-3xl border border-white/10 bg-[#1e293b]/70 p-6">
+                                <p class="text-xs uppercase tracking-[0.25em] text-sky-200">Step 1</p>
+                                <h3 class="mt-2 text-2xl font-semibold text-white">Manual lab</h3>
+                                <p class="mt-3 text-sm text-gray-300">
+                                    Enter feature values one by one while reading the guide. We set default medians so you can experiment safely.
+                                </p>
+                                <a
+                                    href="/manual"
+                                    class="mt-4 inline-flex items-center rounded-lg bg-white text-gray-900 px-4 py-2 text-sm font-semibold transition hover:bg-gray-200"
+                                >
+                                    Open the manual lab
+                                </a>
+                            </article>
+                            <article class="rounded-3xl border border-white/10 bg-[#1e293b]/70 p-6">
+                                <p class="text-xs uppercase tracking-[0.25em] text-sky-200">Step 2</p>
+                                <h3 class="mt-2 text-2xl font-semibold text-white">Batch CSV</h3>
+                                <p class="mt-3 text-sm text-gray-300">
+                                    Upload a CSV that follows the dataset schema. The system cleans the data, runs multiple models at once, and shows the top candidates.
+                                </p>
+                                <a
+                                    href="/batch"
+                                    class="mt-4 inline-flex items-center rounded-lg border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+                                >
+                                    Run batch analysis
+                                </a>
+                            </article>
+                            <article class="rounded-3xl border border-white/10 bg-[#1e293b]/70 p-6">
+                                <p class="text-xs uppercase tracking-[0.25em] text-sky-200">Step 3</p>
+                                <h3 class="mt-2 text-2xl font-semibold text-white">Search results</h3>
+                                <p class="mt-3 text-sm text-gray-300">
+                                    Compare outputs across models, filter by probability, and download table summaries for your research notes.
+                                </p>
+                                <a
+                                    href="/search"
+                                    class="mt-4 inline-flex items-center rounded-lg border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+                                >
+                                    Explore model results
+                                </a>
+                            </article>
+                            <article class="rounded-3xl border border-white/10 bg-[#1e293b]/70 p-6">
+                                <p class="text-xs uppercase tracking-[0.25em] text-sky-200">Step 4</p>
+                                <h3 class="mt-2 text-2xl font-semibold text-white">Document & iterate</h3>
+                                <p class="mt-3 text-sm text-gray-300">
+                                    Save interesting candidates, compare them with NASA documentation, and reuse the data to train additional models if needed.
+                                </p>
+                                <a
+                                    href="/ai"
+                                    class="mt-4 inline-flex items-center rounded-lg bg-sky-300/20 px-4 py-2 text-sm font-semibold text-sky-100 transition hover:bg-sky-300/30"
+                                >
+                                    Request an AI summary
+                                </a>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="ai" class="section">
+                    <div class="rounded-3xl border border-white/10 bg-[#1e293b]/70 p-8 lg:p-12">
+                        <div class="grid gap-8 lg:grid-cols-2 lg:items-center">
+                            <div class="space-y-4">
+                                <span class="text-sm uppercase tracking-[0.3em] text-sky-200">AI assistant</span>
+                                <h2 class="text-3xl font-bold text-white">Entropy, your narrative explainer</h2>
+                                <p class="text-gray-300">
+                                    Entropy uses Google Gemini to turn data tables into accessible scientific narratives. Activate it by adding <code class="bg-black/40 px-1 py-0.5 rounded">GEMINI_API_KEY</code> to your environment.
+                                </p>
+                                <ul class="space-y-3 text-sm text-gray-200">
+                                    <li class="flex gap-2">
+                                        <span>◆</span>
+                                        <span>Ask “Why is this candidate promising?” and get a narrated response.</span>
+                                    </li>
+                                    <li class="flex gap-2">
+                                        <span>◆</span>
+                                        <span>Summarize the top batch results for your team report.</span>
+                                    </li>
+                                    <li class="flex gap-2">
+                                        <span>◆</span>
+                                        <span>Use the copy-context button if you want to move the raw JSON into another tool.</span>
+                                    </li>
+                                </ul>
+                                <div class="flex flex-wrap gap-3 pt-2">
+                                    <a
+                                        href="/ai"
+                                        class="inline-flex items-center rounded-lg bg-white text-gray-900 px-5 py-3 font-semibold transition hover:bg-gray-200"
+                                    >
+                                        Open Entropy
+                                    </a>
+                                    <a
+                                        href="#learn"
+                                        class="inline-flex items-center rounded-lg border border-white/40 px-5 py-3 font-semibold text-white transition hover:bg-white/10"
+                                    >
+                                        How to set up the API key
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="rounded-2xl border border-sky-300/40 bg-sky-300/10 p-6 space-y-4">
+                                <h3 class="text-lg font-semibold text-white">Sample prompts</h3>
+                                <div class="space-y-3 text-sm text-sky-100">
+                                    <p class="bg-black/40 rounded-lg px-4 py-3">
+                                        “Explain the top three candidates from the {{ dataset_label }} dataset and compare them with the overall average.”
+                                    </p>
+                                    <p class="bg-black/40 rounded-lg px-4 py-3">
+                                        “Which feature most influences the high probability for candidate #1?”
+                                    </p>
+                                    <p class="bg-black/40 rounded-lg px-4 py-3">
+                                        “Outline follow-up steps to validate this candidate with ground-based telescope observations.”
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="learn" class="section">
+                    <div class="space-y-8">
+                        <div class="space-y-3">
+                            <span class="text-sm uppercase tracking-[0.3em] text-sky-200">Keep learning</span>
+                            <h2 class="text-3xl font-bold text-white">Resources & FAQ for newcomers</h2>
+                            <p class="text-gray-300 max-w-3xl">
+                                Start with transit fundamentals and learn how to prepare your environment. Follow these links and browse the quick FAQ so you can experiment with confidence.
+                            </p>
+                        </div>
+
+                        <div class="grid gap-6 lg:grid-cols-2">
+                            <div class="rounded-3xl border border-white/10 bg-[#1e293b]/70 p-6 space-y-4">
+                                <h3 class="text-xl font-semibold text-white">Official NASA references</h3>
+                                <ul class="space-y-3 text-sm text-gray-300">
+                                    <li>
+                                        <a
+                                            href="https://archive.stsci.edu/tess/"
+                                            class="text-sky-200 hover:text-sky-100"
+                                            target="_blank"
+                                            rel="noopener"
+                                        >TESS Science Support Center</a>
+                                    </li>
+                                    <li>
+                                        <a
+                                            href="https://exoplanetarchive.ipac.caltech.edu/"
+                                            class="text-sky-200 hover:text-sky-100"
+                                            target="_blank"
+                                            rel="noopener"
+                                        >NASA Exoplanet Archive</a>
+                                    </li>
+                                    <li>
+                                        <a
+                                            href="https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=cumulative"
+                                            class="text-sky-200 hover:text-sky-100"
+                                            target="_blank"
+                                            rel="noopener"
+                                        >Kepler Objects of Interest (KOI) catalog</a>
+                                    </li>
+                                    <li>
+                                        <a
+                                            href="https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=TOI"
+                                            class="text-sky-200 hover:text-sky-100"
+                                            target="_blank"
+                                            rel="noopener"
+                                        >TESS Objects of Interest (TOI) catalog</a>
+                                    </li>
+                                    <li>
+                                        <a
+                                            href="https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=k2pandc"
+                                            class="text-sky-200 hover:text-sky-100"
+                                            target="_blank"
+                                            rel="noopener"
+                                        >K2 Planetary Candidates catalog</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                       
+                </section>
+
+                <section class="section pb-12">
+                    <div class="rounded-3xl border border-white/10 bg-sky-300/10 p-8 text-center text-sky-100">
+                        <h2 class="text-3xl font-bold text-white">Ready to discover new worlds?</h2>
+                        <p class="mt-3 text-sm sm:text-base">
+                            Start with the manual lab to understand the basics, move to batch mode for rapid analysis, and use Entropy to craft the story. We’re excited to see what you find!
+                        </p>
+                        <div class="mt-6 flex flex-wrap justify-center gap-3">
+                            <a href="/manual" class="rounded-lg bg-white px-5 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-200">Start manual lab</a>
+                            <a href="/batch" class="rounded-lg border border-white/40 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10">Run batch analysis</a>
+                            <a href="/ai" class="rounded-lg bg-sky-300/30 px-5 py-3 text-sm font-semibold text-sky-100 hover:bg-sky-300/40">Use Entropy</a>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <footer class="w-full max-w-7xl mx-auto px-4 pb-8 text-xs text-gray-400">
+                <p>
+                    Data sourced from NASA’s Kepler, K2, and TESS missions. Models and UI crafted for educational purposes—validate discoveries with professional astronomers before publication.
+                </p>
+            </footer>
+        </div>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    const toggle = document.getElementById("mobile-menu-toggle");
+                    const menu = document.getElementById("mobile-menu");
+                    if (toggle && menu) {
+                        toggle.addEventListener("click", () => {
+                            menu.classList.toggle("hidden");
+                        });
+                        menu.querySelectorAll("a").forEach((link) => {
+                            link.addEventListener("click", () => {
+                                menu.classList.add("hidden");
+                            });
+                        });
+                    }
+
+                            const prefersReducedMotion = window.matchMedia(
+                                "(prefers-reduced-motion: reduce)"
+                            );
+                            const applyScrollParallax = () => {
+                                const scrollOffset = window.scrollY * 0.18;
+                                document.body.style.backgroundPosition = `center ${scrollOffset}px`;
+                            };
+
+                            let scrollListenerAttached = false;
+                            let frameId = null;
+                            let time = 0;
+
+                            const stopAnimation = () => {
+                                if (frameId !== null) {
+                                    cancelAnimationFrame(frameId);
+                                    frameId = null;
+                                }
+                            };
+
+                            const disableScrollListener = () => {
+                                if (scrollListenerAttached) {
+                                    window.removeEventListener("scroll", applyScrollParallax);
+                                    scrollListenerAttached = false;
+                                }
+                            };
+
+                            const enableScrollListener = () => {
+                                if (!scrollListenerAttached) {
+                                    window.addEventListener("scroll", applyScrollParallax, {
+                                        passive: true,
+                                    });
+                                    scrollListenerAttached = true;
+                                }
+                            };
+
+                            const animate = () => {
+                                time += 0.005;
+                                const driftX = Math.sin(time) * 2;
+                                const driftY = Math.cos(time * 0.7) * 4;
+                                const scrollOffset = window.scrollY * 0.18;
+                                document.body.style.backgroundPosition = `${50 + driftX}% ${
+                                    scrollOffset + driftY
+                                }px`;
+                                frameId = requestAnimationFrame(animate);
+                            };
+
+                            const applyPreference = (shouldReduce) => {
+                                stopAnimation();
+                                if (shouldReduce) {
+                                    time = 0;
+                                    disableScrollListener();
+                                    applyScrollParallax();
+                                    enableScrollListener();
+                                } else {
+                                    disableScrollListener();
+                                    animate();
+                                }
+                            };
+
+                            applyPreference(prefersReducedMotion.matches);
+
+                            prefersReducedMotion.addEventListener("change", (event) => {
+                                applyPreference(event.matches);
+                            });
+
+                            window.addEventListener("beforeunload", () => {
+                                stopAnimation();
+                                disableScrollListener();
+                            });
+                });
+            </script>
+    </body>
 </html>
 
