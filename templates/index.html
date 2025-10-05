@@ -38,12 +38,6 @@
                 <a href="/about" class="text-gray-300 hover:text-white transition-colors duration-300">About Us</a>
                 <a href="/ai" class="text-gray-300 hover:text-white transition-colors duration-300">AI</a>
             </nav>
-                <button
-                    id="mobile-menu-toggle"
-                    class="lg:hidden inline-flex items-center justify-center rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm font-medium text-white"
-                >
-                    Menu
-                </button>
             </header>
 
             <div
@@ -85,10 +79,10 @@
                                                 Our Mission
                                             </a>
                                             <a
-                                                href="/manual"
+                                                href="#mode"
                                                 class="inline-flex items-center rounded-lg border border-white/40 bg-transparent px-5 py-3 font-semibold text-white transition hover:bg-white/10"
                                             >
-                                                Try Manual Lab
+                                                Try it now!
                                             </a>
                                         </div>
                                     </div>
@@ -177,29 +171,27 @@
                             </div>
                         </section>
 
-                <section id="workflow" class="section">
+                <section id="mode" class="section">
                     <div class="space-y-6">
-                        <span class="text-sm uppercase tracking-[0.3em] text-sky-200">Guided workflow</span>
+                        <span class="text-sm uppercase tracking-[0.3em] text-sky-200">Mode</span>
                         <h2 class="text-3xl font-bold text-white max-w-3xl">
-                            Follow the beginner-friendly flow from question to insight
+                            choose your preferred way to explore exoplanet data
                         </h2>
                         <div class="grid gap-6 md:grid-cols-2">
                             <article class="rounded-3xl border border-white/10 bg-[#1e293b]/70 p-6">
-                                <p class="text-xs uppercase tracking-[0.25em] text-sky-200">Step 1</p>
-                                <h3 class="mt-2 text-2xl font-semibold text-white">Manual lab</h3>
+                                <h3 class="mt-2 text-2xl font-semibold text-white">Manual Input</h3>
                                 <p class="mt-3 text-sm text-gray-300">
                                     Enter feature values one by one while reading the guide. We set default medians so you can experiment safely.
                                 </p>
                                 <a
                                     href="/manual"
-                                    class="mt-4 inline-flex items-center rounded-lg bg-white text-gray-900 px-4 py-2 text-sm font-semibold transition hover:bg-gray-200"
+                                    class="mt-4 inline-flex items-center rounded-lg border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
                                 >
-                                    Open the manual lab
+                                    Open Manual Input
                                 </a>
                             </article>
                             <article class="rounded-3xl border border-white/10 bg-[#1e293b]/70 p-6">
-                                <p class="text-xs uppercase tracking-[0.25em] text-sky-200">Step 2</p>
-                                <h3 class="mt-2 text-2xl font-semibold text-white">Batch CSV</h3>
+                                <h3 class="mt-2 text-2xl font-semibold text-white">Batch Input</h3>
                                 <p class="mt-3 text-sm text-gray-300">
                                     Upload a CSV that follows the dataset schema. The system cleans the data, runs multiple models at once, and shows the top candidates.
                                 </p>
@@ -211,10 +203,10 @@
                                 </a>
                             </article>
                             <article class="rounded-3xl border border-white/10 bg-[#1e293b]/70 p-6">
-                                <p class="text-xs uppercase tracking-[0.25em] text-sky-200">Step 3</p>
-                                <h3 class="mt-2 text-2xl font-semibold text-white">Search results</h3>
+
+                                <h3 class="mt-2 text-2xl font-semibold text-white">Search Id</h3>
                                 <p class="mt-3 text-sm text-gray-300">
-                                    Compare outputs across models, filter by probability, and download table summaries for your research notes.
+                                    Search for specific candidates in the prediction results using identifiers like TOI, TIC, or KOI.
                                 </p>
                                 <a
                                     href="/search"
@@ -224,74 +216,18 @@
                                 </a>
                             </article>
                             <article class="rounded-3xl border border-white/10 bg-[#1e293b]/70 p-6">
-                                <p class="text-xs uppercase tracking-[0.25em] text-sky-200">Step 4</p>
-                                <h3 class="mt-2 text-2xl font-semibold text-white">Document & iterate</h3>
+                                <h3 class="mt-2 text-2xl font-semibold text-white">Entropy</h3>
                                 <p class="mt-3 text-sm text-gray-300">
-                                    Save interesting candidates, compare them with NASA documentation, and reuse the data to train additional models if needed.
+                                    AI models that you can ask to predict and interpret exoplanet data.
                                 </p>
                                 <a
                                     href="/ai"
-                                    class="mt-4 inline-flex items-center rounded-lg bg-sky-300/20 px-4 py-2 text-sm font-semibold text-sky-100 transition hover:bg-sky-300/30"
+                                    class="mt-4 inline-flex items-center rounded-lg border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
                                 >
-                                    Request an AI summary
+                                    <img src="{{ url_for('static', filename='img/Logo.png') }}" alt="ExoPlanTropy Logo" class="w-7 h-7 object-contain mr-2">
+                                    ask and let entropy do the work.
                                 </a>
                             </article>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="ai" class="section">
-                    <div class="rounded-3xl border border-white/10 bg-[#1e293b]/70 p-8 lg:p-12">
-                        <div class="grid gap-8 lg:grid-cols-2 lg:items-center">
-                            <div class="space-y-4">
-                                <span class="text-sm uppercase tracking-[0.3em] text-sky-200">AI assistant</span>
-                                <h2 class="text-3xl font-bold text-white">Entropy, your narrative explainer</h2>
-                                <p class="text-gray-300">
-                                    Entropy uses Google Gemini to turn data tables into accessible scientific narratives. Activate it by adding <code class="bg-black/40 px-1 py-0.5 rounded">GEMINI_API_KEY</code> to your environment.
-                                </p>
-                                <ul class="space-y-3 text-sm text-gray-200">
-                                    <li class="flex gap-2">
-                                        <span>◆</span>
-                                        <span>Ask “Why is this candidate promising?” and get a narrated response.</span>
-                                    </li>
-                                    <li class="flex gap-2">
-                                        <span>◆</span>
-                                        <span>Summarize the top batch results for your team report.</span>
-                                    </li>
-                                    <li class="flex gap-2">
-                                        <span>◆</span>
-                                        <span>Use the copy-context button if you want to move the raw JSON into another tool.</span>
-                                    </li>
-                                </ul>
-                                <div class="flex flex-wrap gap-3 pt-2">
-                                    <a
-                                        href="/ai"
-                                        class="inline-flex items-center rounded-lg bg-white text-gray-900 px-5 py-3 font-semibold transition hover:bg-gray-200"
-                                    >
-                                        Open Entropy
-                                    </a>
-                                    <a
-                                        href="#learn"
-                                        class="inline-flex items-center rounded-lg border border-white/40 px-5 py-3 font-semibold text-white transition hover:bg-white/10"
-                                    >
-                                        How to set up the API key
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="rounded-2xl border border-sky-300/40 bg-sky-300/10 p-6 space-y-4">
-                                <h3 class="text-lg font-semibold text-white">Sample prompts</h3>
-                                <div class="space-y-3 text-sm text-sky-100">
-                                    <p class="bg-black/40 rounded-lg px-4 py-3">
-                                        “Explain the top three candidates from the {{ dataset_label }} dataset and compare them with the overall average.”
-                                    </p>
-                                    <p class="bg-black/40 rounded-lg px-4 py-3">
-                                        “Which feature most influences the high probability for candidate #1?”
-                                    </p>
-                                    <p class="bg-black/40 rounded-lg px-4 py-3">
-                                        “Outline follow-up steps to validate this candidate with ground-based telescope observations.”
-                                    </p>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </section>
@@ -357,19 +293,6 @@
                        
                 </section>
 
-                <section class="section pb-12">
-                    <div class="rounded-3xl border border-white/10 bg-sky-300/10 p-8 text-center text-sky-100">
-                        <h2 class="text-3xl font-bold text-white">Ready to discover new worlds?</h2>
-                        <p class="mt-3 text-sm sm:text-base">
-                            Start with the manual lab to understand the basics, move to batch mode for rapid analysis, and use Entropy to craft the story. We’re excited to see what you find!
-                        </p>
-                        <div class="mt-6 flex flex-wrap justify-center gap-3">
-                            <a href="/manual" class="rounded-lg bg-white px-5 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-200">Start manual lab</a>
-                            <a href="/batch" class="rounded-lg border border-white/40 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10">Run batch analysis</a>
-                            <a href="/ai" class="rounded-lg bg-sky-300/30 px-5 py-3 text-sm font-semibold text-sky-100 hover:bg-sky-300/40">Use Entropy</a>
-                        </div>
-                    </div>
-                </section>
             </main>
 
             <footer class="w-full max-w-7xl mx-auto px-4 pb-8 text-xs text-gray-400">

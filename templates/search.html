@@ -30,36 +30,18 @@
   >
     <div class="relative min-h-screen flex flex-col w-full bg-black/30">
       <header
-        class="w-full max-w-7xl mx-auto flex justify-between items-center p-4 bg-[#1e293b]/50 backdrop-blur-md rounded-b-2xl border-b border-white/10"
-      >
-        <a href="/" class="flex items-center space-x-3">
-          <img
-            src="{{ url_for('static', filename='img/Logo.png') }}"
-            alt="ExoPlanTropy Logo"
-            class="w-7 h-7 object-contain"
-          />
-          <h1 class="text-xl font-bold text-white tracking-wider">
-            ExoPlanTropy
-          </h1>
-        </a>
-        <nav class="hidden sm:flex items-center space-x-8 text-sm font-medium">
-          <a
-            href="/"
-            class="text-gray-300 hover:text-white transition-colors duration-300"
-            >Home</a
-          >
-          <a
-            href="/about"
-            class="text-gray-300 hover:text-white transition-colors duration-300"
-            >About Us</a
-          >
-          <a
-            href="/ai"
-            class="text-gray-300 hover:text-white transition-colors duration-300"
-            >AI</a
-          >
-        </nav>
-      </header>
+                class="sticky top-4 z-50 w-full max-w-7xl mx-auto flex items-center justify-between px-4 py-3 bg-[#1e293b]/80 backdrop-blur-md rounded-2xl border border-white/10 shadow-xl"
+            >
+                <a href="/" class="flex items-center space-x-3">
+                <img src="{{ url_for('static', filename='img/Logo.png') }}" alt="ExoPlanTropy Logo" class="w-7 h-7 object-contain">
+                <h1 class="text-xl font-bold text-white tracking-wider">ExoPlanTropy</h1>
+            </a>
+            <nav class="hidden sm:flex items-center space-x-8 text-sm font-medium">
+                <a href="/" class="text-gray-300 hover:text-white transition-colors duration-300">Home</a>
+                <a href="/about" class="text-gray-300 hover:text-white transition-colors duration-300">About Us</a>
+                <a href="/ai" class="text-gray-300 hover:text-white transition-colors duration-300">AI</a>
+            </nav>
+            </header>
 
       <div class="w-full max-w-7xl mx-auto px-4 pt-8">
         <p class="text-sm mb-4">

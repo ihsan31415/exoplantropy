@@ -101,13 +101,15 @@ THANKS_TO: List[Dict[str, str]] = [
         "name": "BRIN",
         "photo": "img/team/brin.jpg",
         "link": "https://www.brin.go.id/",
-        "caption": "National Research and Innovation Agency"
+        "caption": "National Research and Innovation Agency",
+        "thanks": "thanks to Mr. Thomas djamaludin and Mr. Immanuel Sungging Mumpuni for the insight about the exoplanet data"
     },
     {
         "name": "NASA",
         "photo": "img/team/nasa.jpg",
         "link": "https://www.nasa.gov/",
-        "caption": "National Aeronautics and Space Administration"
+        "caption": "National Aeronautics and Space Administration",
+        "thanks": "thanks to Mr. Irwan Prabowo on the insight about how to deliver the data to the user"
     },
 ]
 

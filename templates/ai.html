@@ -41,12 +41,6 @@
                 <a href="/about" class="text-gray-300 hover:text-white transition-colors duration-300 ">About Us</a>
                 <a href="/ai" class="text-white border-b-2 border-white pb-1">AI</a>
             </nav>
-                <button
-                    id="mobile-menu-toggle"
-                    class="lg:hidden inline-flex items-center justify-center rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm font-medium text-white"
-                >
-                    Menu
-                </button>
             </header>
 
       <div class="w-full max-w-7xl mx-auto px-4 pt-8">
@@ -79,19 +73,6 @@
         >
           <form method="post" class="space-y-6">
             <div class="grid md:grid-cols-1 gap-4">
-              <div>
-                <label class="block text-xs uppercase text-gray-400 mb-2"
-                  >Top-K</label
-                >
-                <input
-                  type="number"
-                  name="top_k"
-                  min="1"
-                  max="100"
-                  value="{{ top_k }}"
-                  class="w-full bg-gray-700/50 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
-                />
-              </div>
             </div>
             <input type="hidden" name="llm_model" value="{{ llm_model }}" />
 
@@ -112,7 +93,7 @@
                 type="submit"
                 class="bg-white hover:bg-gray-200 text-gray-900 font-semibold rounded-lg px-8 py-3 transition-colors duration-300"
               >
-                Generate answer
+                Ask Entropy
               </button>
               <p class="text-xs text-gray-400">
                 Context is built from the default models that loaded successfully.

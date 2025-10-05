@@ -34,12 +34,6 @@
                 <a href="/about" class="text-white border-b-2 border-white pb-1">About Us</a>
                 <a href="/ai" class="text-gray-300 hover:text-white transition-colors duration-300">AI</a>
             </nav>
-                <button
-                    id="mobile-menu-toggle"
-                    class="lg:hidden inline-flex items-center justify-center rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm font-medium text-white"
-                >
-                    Menu
-                </button>
             </header>
 
             <!-- Breadcrumb & Title -->
@@ -89,7 +83,43 @@
                     </div>
                     {% endif %}
 
-                    {% if team_members %}
+                    {% if thanks_to %}
+                    <div class="mt-12 border-t border-white/10 pt-8">
+                        <h3 class="text-2xl font-semibold text-white mb-4">Thanks To</h3>
+                        <p class="text-gray-300 text-lg mb-6">We're grateful for the institutions supporting our journey through the cosmos.</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            {% for supporter in thanks_to %}
+                            <div class="flex flex-col items-center text-center rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 shadow-lg">
+                                {% if supporter.link %}
+                                <a href="{{ supporter.link }}" target="_blank" rel="noopener" class="focus:outline-none focus:ring-2 focus:ring-sky-400/80 rounded-xl">
+                                    <img
+                                        src="{{ url_for('static', filename=supporter.photo) }}"
+                                        alt="{{ supporter.name }} logo"
+                                        class="h-50 sm:h-50 object-contain mx-auto"
+                                    >
+                                </a>
+                                {% else %}
+                                <img
+                                    src="{{ url_for('static', filename=supporter.photo) }}"
+                                    alt="{{ supporter.name }} logo"
+                                    class="h-50 sm:h-50 object-contain mx-auto"
+                                >
+                                {% endif %}
+                                <p class="mt-4 text-white text-lg font-semibold">{{ supporter.name }}</p>
+                                {% if supporter.caption %}
+                                <p class="text-sm text-gray-400 mt-1">{{ supporter.caption }}</p>
+                                {% endif %}
+                                {% if supporter.thanks %}
+                                <p class="text-gray-300 mt-2">{{ supporter.thanks }}</p>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                     {% if team_members %}
                     <div class="mt-12 border-t border-white/10 pt-8">
                         <h3 class="text-2xl font-semibold text-white mb-4">The Team</h3>
                         <p class="text-gray-300 text-lg mb-6">A passionate group of developers, astronomers, and data scientists united by a shared love for the stars.</p>
@@ -120,39 +150,6 @@
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/LinkedIn_icon.svg/2048px-LinkedIn_icon.svg.png" alt="LinkedIn" class="w-5 h-5 inline-block" />
                                     <span>LinkedIn Profile</span>
                                 </a>
-                                {% endif %}
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    {% if thanks_to %}
-                    <div class="mt-12 border-t border-white/10 pt-8">
-                        <h3 class="text-2xl font-semibold text-white mb-4">Thanks To</h3>
-                        <p class="text-gray-300 text-lg mb-6">We're grateful for the institutions supporting our journey through the cosmos.</p>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {% for supporter in thanks_to %}
-                            <div class="flex flex-col items-center text-center rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 shadow-lg">
-                                {% if supporter.link %}
-                                <a href="{{ supporter.link }}" target="_blank" rel="noopener" class="focus:outline-none focus:ring-2 focus:ring-sky-400/80 rounded-xl">
-                                    <img
-                                        src="{{ url_for('static', filename=supporter.photo) }}"
-                                        alt="{{ supporter.name }} logo"
-                                        class="h-50 sm:h-50 object-contain mx-auto"
-                                    >
-                                </a>
-                                {% else %}
-                                <img
-                                    src="{{ url_for('static', filename=supporter.photo) }}"
-                                    alt="{{ supporter.name }} logo"
-                                    class="h-50 sm:h-50 object-contain mx-auto"
-                                >
-                                {% endif %}
-                                <p class="mt-4 text-white text-lg font-semibold">{{ supporter.name }}</p>
-                                {% if supporter.caption %}
-                                <p class="text-sm text-gray-400 mt-1">{{ supporter.caption }}</p>
                                 {% endif %}
                             </div>
                             {% endfor %}
