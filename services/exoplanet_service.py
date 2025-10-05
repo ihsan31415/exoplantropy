@@ -307,8 +307,12 @@ def load_models(
             models[name] = load(path)
             logging.info(f"✓ Successfully loaded: {name}")
         except Exception as e:
+            # Don't crash the entire app if one model file fails to unpickle.
+            # Record it as missing and continue so the UI can still function with
+            # the available models. Include the exception message in logs.
             logging.error(f"✗ Failed to load {name}: {e}")
-            raise  # Re-raise to see full traceback
+            missing.append((name, path))
+            continue
 
     return models, missing
 
@@ -379,11 +383,7 @@ def run_predictions(
         metadata["sample_index"] = np.arange(1, len(metadata) + 1)
 
     for name, pipeline in models.items():
-        # --- Defensive feature alignment ---
-        # Create a copy to avoid modifying the original DataFrame in the loop
         prediction_features = features.copy()
-        
-        # Try to get expected feature names from the model/pipeline
         expected_features = None
         if hasattr(pipeline, 'feature_names_in_'):
             expected_features = pipeline.feature_names_in_
@@ -392,26 +392,56 @@ def run_predictions(
                 if hasattr(step_obj, 'feature_names_in_'):
                     expected_features = step_obj.feature_names_in_
                     break
-        
-        # If we found the expected feature list, reorder the DataFrame columns
-        if expected_features is not None:
-            try:
-                prediction_features = prediction_features[expected_features]
-            except KeyError as e:
-                missing_in_input = set(expected_features) - set(prediction_features.columns)
-                if missing_in_input:
-                    raise ValueError(
-                        f"Input data for model '{name}' is missing required features: {missing_in_input}"
-                    ) from e
-                # If it's not a missing column, re-raise the original error
-                raise e
-        # --- End of defensive feature alignment ---
 
-        proba = pipeline.predict_proba(prediction_features)[:, 1]
-        preds = pipeline.predict(prediction_features)
+        debug_info = {
+            'input_columns': prediction_features.columns.tolist(),
+            'input_shape': prediction_features.shape,
+            'expected_features': list(expected_features) if expected_features is not None else None
+        }
+
+        if expected_features is not None:
+            expected_list = list(expected_features)
+            missing_in_input = [f for f in expected_list if f not in prediction_features.columns]
+            if missing_in_input:
+                import logging
+                logging.basicConfig(level=logging.INFO)
+                logging.warning(
+                    "Model '%s' expected features missing from input: %s - filling with medians/zeros",
+                    name,
+                    missing_in_input,
+                )
+                medians = prediction_features.median()
+                for col in missing_in_input:
+                    if col in medians.index and not np.isnan(medians[col]):
+                        fill_value = float(medians[col])
+                    else:
+                        fill_value = 0.0
+                    prediction_features[col] = fill_value
+            prediction_features = prediction_features.reindex(columns=expected_list, fill_value=0.0)
+
+        try:
+            prediction_features = prediction_features.apply(pd.to_numeric, errors="coerce").fillna(0.0)
+        except Exception:
+            pass
+
+        try:
+            proba = pipeline.predict_proba(prediction_features)
+            if proba.ndim == 1:
+                proba_vals = np.zeros(len(proba), dtype=float)
+            else:
+                proba_vals = proba[:, -1]
+        except Exception as e:
+            # Error detail to UI
+            raise RuntimeError(f"Model '{name}' failed to produce predictions: {e}\nDebug info: {debug_info}")
+
+        try:
+            preds = pipeline.predict(prediction_features)
+        except Exception as e:
+            raise RuntimeError(f"Model '{name}' failed to produce final labels: {e}\nDebug info: {debug_info}")
+
         df = pd.DataFrame(
             {
-                "planet_candidate_probability": proba,
+                "planet_candidate_probability": proba_vals,
                 "predicted_label_numeric": preds,
             },
             index=features.index,

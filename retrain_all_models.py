@@ -33,7 +33,7 @@ def main():
         print("-" * 70)
         
         if not full_path.exists():
-            print(f"⚠ Script not found: {full_path}")
+            print(f"[WARNING] Script not found: {full_path}")
             continue
         
         try:
@@ -45,18 +45,18 @@ def main():
             )
             
             if result.returncode == 0:
-                print(f"✓ {model_name.upper()} trained successfully!")
+                print(f"[OK] {model_name.upper()} trained successfully!")
                 if result.stdout:
                     # Print last few lines of output
                     lines = result.stdout.strip().split('\n')
                     for line in lines[-5:]:
                         print(f"  {line}")
             else:
-                print(f"✗ {model_name.upper()} training failed!")
+                print(f"[ERROR] {model_name.upper()} training failed!")
                 print(f"Error: {result.stderr}")
         
         except Exception as e:
-            print(f"✗ Error running {model_name}: {e}")
+            print(f"[ERROR] Error running {model_name}: {e}")
     
     print("\n" + "="*70)
     print("RETRAINING COMPLETE!")
