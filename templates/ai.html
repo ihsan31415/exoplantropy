@@ -78,7 +78,7 @@
           class="bg-[#1e293b]/50 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/10"
         >
           <form method="post" class="space-y-6">
-            <div class="grid md:grid-cols-2 gap-4">
+            <div class="grid md:grid-cols-1 gap-4">
               <div>
                 <label class="block text-xs uppercase text-gray-400 mb-2"
                   >Top-K</label
@@ -92,18 +92,8 @@
                   class="w-full bg-gray-700/50 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
                 />
               </div>
-              <div>
-                <label class="block text-xs uppercase text-gray-400 mb-2"
-                  >Model Gemini</label
-                >
-                <input
-                  type="text"
-                  name="llm_model"
-                  value="{{ llm_model }}"
-                  class="w-full bg-gray-700/50 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
-                />
-              </div>
             </div>
+            <input type="hidden" name="llm_model" value="{{ llm_model }}" />
 
             <div>
               <label class="block text-xs uppercase text-gray-400 mb-2"
@@ -170,8 +160,8 @@
         {% if response_text %}
         <section class="bg-white/10 border border-white/10 rounded-2xl p-6 shadow-lg">
           <h3 class="text-xl font-semibold text-white mb-4">Gemini response</h3>
-          <div class="prose prose-invert max-w-none">
-            <p>{{ response_text | safe }}</p>
+          <div id="response-container" class="prose prose-invert max-w-none">
+            <!-- Response text will be injected here -->
           </div>
         </section>
         {% elif context_preview %}
@@ -237,6 +227,66 @@
         {% endif %}
       </main>
     </div>
+
+    {% if response_text %}
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const responseContainer = document.getElementById("response-container");
+        const responseText = {{ response_text | tojson }};
+
+        try {
+          // Try to parse as JSON first
+          let responseData;
+          try {
+            responseData = JSON.parse(responseText);
+          } catch (e) {
+            // If direct parsing fails, try to extract JSON from the response text
+            const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
+            if (jsonMatch && jsonMatch[1]) {
+              responseData = JSON.parse(jsonMatch[1]);
+            } else {
+              throw e;
+            }
+          }
+          
+          let content = '';
+
+          // Handle nested JSON structure (plot_pixelfile_response.result)
+          if (responseData.plot_pixelfile_response && responseData.plot_pixelfile_response.result) {
+            try {
+              const innerData = JSON.parse(responseData.plot_pixelfile_response.result);
+              if (innerData.plot_base64) {
+                content += '<h4 class="text-xl font-semibold text-white mt-4 mb-2">Target Pixel File Plot</h4>';
+                content += `<img src="data:image/png;base64,${innerData.plot_base64}" alt="Target Pixel File Plot" class="rounded-lg shadow-lg mt-4 max-w-full" />`;
+              }
+            } catch (e) {
+              console.error("Error parsing nested JSON:", e);
+            }
+          }
+          
+          // Handle direct JSON structure
+          if (responseData.plot_base64) {
+            content += '<h4 class="text-xl font-semibold text-white mt-4 mb-2">Target Pixel File Plot</h4>';
+            content += `<img src="data:image/png;base64,${responseData.plot_base64}" alt="Target Pixel File Plot" class="rounded-lg shadow-lg mt-4 max-w-full" />`;
+          }
+          
+          if (responseData.downloaded_tpf) {
+            content += '<h4 class="text-xl font-semibold text-white mt-6 mb-2">Observation Details</h4><pre class="bg-black/20 p-4 rounded-lg text-xs text-gray-300"><code>' + JSON.stringify(responseData.downloaded_tpf, null, 2) + '</code></pre>';
+          }
+
+          if (content === '') {
+            // No image found, display the text response
+            content = `<p class="text-gray-200">${responseText.replace(/\\n/g, '<br>')}</p>`;
+          }
+
+          responseContainer.innerHTML = content;
+        } catch (e) {
+          // Not a JSON object, treat as plain text
+          responseContainer.innerHTML = `<p class="text-gray-200">${responseText.replace(/\\n/g, '<br>')}</p>`;
+        }
+      });
+    </script>
+    {% endif %}
 
     {% if context_preview %}
     <script>

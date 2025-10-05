@@ -133,12 +133,7 @@
             <div class="grid gap-4 md:grid-cols-2">
               {% for feature in features %}
               <div>
-                <label class="block text-sm text-gray-200 font-medium">{{ feature.name }}</label>
-                {% if feature.description %}
-                <p class="text-xs text-gray-400 mt-1 leading-relaxed">
-                  {{ feature.description }}
-                </p>
-                {% endif %}
+                <label class="block text-sm text-gray-200 font-medium mb-2">{{ feature.description or feature.name }}</label>
                 <input
                   type="number"
                   step="any"
@@ -146,7 +141,7 @@
                   value="{{ request.form.get('feature_' ~ feature.name, '%.6f'|format(feature.median)) }}"
                   class="w-full bg-gray-700/50 text-white placeholder-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/25"
                 />
-                <p class="text-xs text-gray-500 mt-1">σ ≈ {{ '%.4f'|format(feature.std) }}</p>
+                <p class="text-xs text-gray-500 mt-1">Median: {{ '%.4f'|format(feature.median) }} | σ ≈ {{ '%.4f'|format(feature.std) }}</p>
               </div>
               {% endfor %}
             </div>

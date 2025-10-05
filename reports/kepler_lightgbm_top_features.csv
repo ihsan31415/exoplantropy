@@ -1,0 +1,11 @@
+feature,importance
+magnitude,4070
+transit_duration_hr,3674
+transit_depth_ppm,3648
+planet_radius_rearth,3282
+stellar_teff_k,3257
+orbital_period_days,3084
+stellar_logg_cgs,2735
+stellar_radius_rsun,2693
+equilibrium_temp_k,2439
+insolation_flux_earth,2118

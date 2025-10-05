@@ -259,7 +259,17 @@
                   {% if rows %}
                   <tr>
                     {% for key in rows[0].keys() %}
-                    <th class="px-4 py-3">{{ key.replace('_', ' ') }}</th>
+                      {% set pretty_label = None %}
+                      {% if feature_descriptions is defined and key in feature_descriptions %}
+                        {% set pretty_label = feature_descriptions[key] %}
+                      {% endif %}
+                      <th class="px-4 py-3">
+                        {% if pretty_label %}
+                          {{ pretty_label }}
+                        {% else %}
+                          {{ key.replace('_', ' ') | capitalize }}
+                        {% endif %}
+                      </th>
                     {% endfor %}
                   </tr>
                   {% endif %}

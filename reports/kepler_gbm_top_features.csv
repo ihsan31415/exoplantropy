@@ -1,0 +1,11 @@
+feature,importance
+planet_radius_rearth,0.35147374563469275
+orbital_period_days,0.14240153045013024
+transit_depth_ppm,0.14047837945745495
+magnitude,0.11127340475771068
+transit_duration_hr,0.06395160727297951
+equilibrium_temp_k,0.0583016811517301
+stellar_teff_k,0.04295625747238238
+insolation_flux_earth,0.041894198369140524
+stellar_logg_cgs,0.03121163371899884
+stellar_radius_rsun,0.01605756171478009

@@ -35,9 +35,19 @@ except ImportError:  # pragma: no cover - optional at runtime
     load_dotenv = None  # type: ignore
 
 try:  # Optional dependency used for Gemini integration
-    import google.generativeai as genai  # type: ignore
+    from google import genai
+    from google.genai import types as genai_types
 except ImportError:  # pragma: no cover - optional at runtime
     genai = None
+    genai_types = None
+
+# Add imports for plotting and image encoding
+import base64
+import io
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend
+import matplotlib.pyplot as plt
+
 
 from scripts.common import (  # noqa: E402 - loaded after sys.path adjustments in callers
     MODELS_DIR,
@@ -56,16 +66,16 @@ UPLOAD_OPTION_LABEL = "Upload CSV (choose schema)"
 
 DATASET_CONFIG: Dict[str, Dict[str, object]] = {
     "tess": {
-        "label": "TESS catalogue (bundled)",
+        "label": "TESS catalogue (Bundled)",
         "loader": load_tess_dataset,
         "model_files": {
-            "CatBoost": "tess_catboost.joblib",
-            "Gradient Boosting": "tess_gbm.joblib",
-            "Keras MLP": "tess_mlp.joblib",
-            "LightGBM": "tess_lightgbm.joblib",
-            "Logistic Regression": "tess_logistic_regression.joblib",
-            "Random Forest": "tess_random_forest.joblib",
-            "XGBoost": "tess_xgboost.joblib",
+            "CatBoost": "catboost_model.joblib",
+            "Gradient Boosting": "gradient_boosting_model.joblib",
+            "LightGBM": "lightgbm_model.joblib",
+            "Logistic Regression": "logreg_model.joblib",
+            "MLP": "mlp_model.joblib",
+            "Random Forest": "random_forest_model.joblib",
+            "XGBoost": "xgboost_model.joblib",
         },
         "default_models": (
             "LightGBM",
@@ -73,28 +83,28 @@ DATASET_CONFIG: Dict[str, Dict[str, object]] = {
             "CatBoost",
             "Gradient Boosting",
             "Random Forest",
-            "Keras MLP",
+            "MLP",
             "Logistic Regression",
         ),
         "identifier_priority": [
-            "toi",
-            "tid",
-            "ctoi_alias",
-            "tfopwg_disp",
+            "unified_id",
+            "stellar_id",
+            "disposition",
+            "mission",
             "sample_index",
         ],
     },
     "kepler": {
-        "label": "Kepler KOI catalogue (bundled)",
+        "label": "Kepler KOI catalogue (Bundled)",
         "loader": load_kepler_dataset,
         "model_files": {
-            "CatBoost": "kepler_catboost.joblib",
-            "Gradient Boosting": "kepler_gbm.joblib",
-            "Keras MLP": "kepler_mlp.joblib",
-            "LightGBM": "kepler_lightgbm.joblib",
-            "Logistic Regression": "kepler_logistic_regression.joblib",
-            "Random Forest": "kepler_random_forest.joblib",
-            "XGBoost": "kepler_xgboost.joblib",
+            "CatBoost": "catboost_model.joblib",
+            "Gradient Boosting": "gradient_boosting_model.joblib",
+            "LightGBM": "lightgbm_model.joblib",
+            "Logistic Regression": "logreg_model.joblib",
+            "MLP": "mlp_model.joblib",
+            "Random Forest": "random_forest_model.joblib",
+            "XGBoost": "xgboost_model.joblib",
         },
         "default_models": (
             "LightGBM",
@@ -102,28 +112,28 @@ DATASET_CONFIG: Dict[str, Dict[str, object]] = {
             "CatBoost",
             "Gradient Boosting",
             "Random Forest",
-            "Keras MLP",
+            "MLP",
             "Logistic Regression",
         ),
         "identifier_priority": [
-            "kepid",
-            "kepoi_name",
-            "kepler_name",
-            "koi_disposition",
+            "unified_id",
+            "stellar_id",
+            "disposition",
+            "mission",
             "sample_index",
         ],
     },
     "k2": {
-        "label": "K2 planet candidate catalogue (bundled)",
+        "label": "K2 planet candidate catalogue (Bundled)",
         "loader": load_k2_dataset,
         "model_files": {
-            "CatBoost": "k2_catboost.joblib",
-            "Gradient Boosting": "k2_gbm.joblib",
-            "Keras MLP": "k2_mlp.joblib",
-            "LightGBM": "k2_lightgbm.joblib",
-            "Logistic Regression": "k2_logistic_regression.joblib",
-            "Random Forest": "k2_random_forest.joblib",
-            "XGBoost": "k2_xgboost.joblib",
+            "CatBoost": "catboost_model.joblib",
+            "Gradient Boosting": "gradient_boosting_model.joblib",
+            "LightGBM": "lightgbm_model.joblib",
+            "Logistic Regression": "logreg_model.joblib",
+            "MLP": "mlp_model.joblib",
+            "Random Forest": "random_forest_model.joblib",
+            "XGBoost": "xgboost_model.joblib",
         },
         "default_models": (
             "LightGBM",
@@ -131,14 +141,14 @@ DATASET_CONFIG: Dict[str, Dict[str, object]] = {
             "CatBoost",
             "Gradient Boosting",
             "Random Forest",
-            "Keras MLP",
+            "MLP",
             "Logistic Regression",
         ),
         "identifier_priority": [
-            "tic_id",
-            "k2_name",
-            "pl_name",
+            "unified_id",
+            "stellar_id",
             "disposition",
+            "mission",
             "sample_index",
         ],
     },
@@ -147,115 +157,68 @@ DATASET_CONFIG: Dict[str, Dict[str, object]] = {
 DATASET_LABEL_TO_KEY = {cfg["label"]: key for key, cfg in DATASET_CONFIG.items()}
 DATASET_LABELS = [cfg["label"] for cfg in DATASET_CONFIG.values()]
 
+# Standard feature list from combined_all.csv (10 features)
+STANDARD_FEATURE_ORDER = (
+    "orbital_period_days",
+    "transit_duration_hr",
+    "transit_depth_ppm",
+    "planet_radius_rearth",
+    "equilibrium_temp_k",
+    "insolation_flux_earth",
+    "stellar_teff_k",
+    "stellar_radius_rsun",
+    "stellar_logg_cgs",
+    "magnitude",
+)
+
 FEATURE_DISPLAY_ORDER: Dict[str, Tuple[str, ...]] = {
-    "tess": (
-        "orbital_period_days",
-        "transit_duration_hr",
-        "transit_depth_ppm",
-        "planet_radius_rearth",
-        "equilibrium_temp_k",
-        "insolation_flux_earth",
-        "stellar_teff_k",
-        "stellar_radius_rsun",
-        "stellar_logg_cgs",
-        "magnitude",
-    ),
-    "kepler": (
-        "orbital_period_days",
-        "transit_duration_hr",
-        "transit_depth_ppm",
-        "planet_radius_rearth",
-        "equilibrium_temp_k",
-        "insolation_flux_earth",
-        "stellar_teff_k",
-        "stellar_radius_rsun",
-        "stellar_logg_cgs",
-        "magnitude",
-    ),
-    "k2": (
-        "orbital_period_days",
-        "transit_duration_hr",
-        "transit_depth_ppm",
-        "planet_radius_rearth",
-        "equilibrium_temp_k",
-        "insolation_flux_earth",
-        "stellar_teff_k",
-        "stellar_radius_rsun",
-        "stellar_logg_cgs",
-        "magnitude",
-    ),
+    "tess": STANDARD_FEATURE_ORDER,
+    "kepler": STANDARD_FEATURE_ORDER,
+    "k2": STANDARD_FEATURE_ORDER,
+}
+
+STANDARD_FEATURE_DESCRIPTIONS = {
+    "orbital_period_days": "Orbital period in days",
+    "transit_duration_hr": "Transit duration in hours",
+    "transit_depth_ppm": "Transit depth in parts per million",
+    "planet_radius_rearth": "Planet radius in Earth radii",
+    "equilibrium_temp_k": "Planet equilibrium temperature in Kelvin",
+    "insolation_flux_earth": "Insolation flux in Earth units",
+    "stellar_teff_k": "Stellar effective temperature in Kelvin",
+    "stellar_radius_rsun": "Stellar radius in Solar radii",
+    "stellar_logg_cgs": "Stellar surface gravity (log g, cgs)",
+    "magnitude": "Kepler, TESS, or K2 magnitude",
 }
 
 FEATURE_DESCRIPTIONS: Dict[str, Dict[str, str]] = {
-    "tess": {
-        "orbital_period_days": "Orbital period in days",
-        "transit_duration_hr": "Transit duration in hours",
-        "transit_depth_ppm": "Transit depth in parts per million",
-        "planet_radius_rearth": "Planet radius in Earth radii",
-        "equilibrium_temp_k": "Planet equilibrium temperature in Kelvin",
-        "insolation_flux_earth": "Insolation flux in Earth units",
-        "stellar_teff_k": "Stellar effective temperature in Kelvin",
-        "stellar_radius_rsun": "Stellar radius in Solar radii",
-        "stellar_logg_cgs": "Stellar surface gravity (log g, cgs)",
-        "magnitude": "Kepler, TESS, or K2 magnitude",
-    },
-    "kepler": {
-        "orbital_period_days": "Orbital period in days",
-        "transit_duration_hr": "Transit duration in hours",
-        "transit_depth_ppm": "Transit depth in parts per million",
-        "planet_radius_rearth": "Planet radius in Earth radii",
-        "equilibrium_temp_k": "Planet equilibrium temperature in Kelvin",
-        "insolation_flux_earth": "Insolation flux in Earth units",
-        "stellar_teff_k": "Stellar effective temperature in Kelvin",
-        "stellar_radius_rsun": "Stellar radius in Solar radii",
-        "stellar_logg_cgs": "Stellar surface gravity (log g, cgs)",
-        "magnitude": "Kepler, TESS, or K2 magnitude",
-    },
-    "k2": {
-        "orbital_period_days": "Orbital period in days",
-        "transit_duration_hr": "Transit duration in hours",
-        "transit_depth_ppm": "Transit depth in parts per million",
-        "planet_radius_rearth": "Planet radius in Earth radii",
-        "equilibrium_temp_k": "Planet equilibrium temperature in Kelvin",
-        "insolation_flux_earth": "Insolation flux in Earth units",
-        "stellar_teff_k": "Stellar effective temperature in Kelvin",
-        "stellar_radius_rsun": "Stellar radius in Solar radii",
-        "stellar_logg_cgs": "Stellar surface gravity (log g, cgs)",
-        "magnitude": "Kepler, TESS, or K2 magnitude",
-    },
+    "tess": STANDARD_FEATURE_DESCRIPTIONS,
+    "kepler": STANDARD_FEATURE_DESCRIPTIONS,
+    "k2": STANDARD_FEATURE_DESCRIPTIONS,
 }
 
 TRAINING_LABEL_CONFIG: Dict[str, Dict[str, object]] = {
     "tess": {
-        "label_column": "tfopwg_disp",
-        "positive_labels": {"PC"},
-        "allowed_labels": {"PC", "CP", "FP", "FA", "KP"},
+        "label_column": "disposition",
+        "positive_labels": {"CONFIRMED"},
+        "allowed_labels": {"CONFIRMED", "FALSE_POSITIVE", "CANDIDATE"},
     },
     "kepler": {
-        "label_column": "koi_disposition",
+        "label_column": "disposition",
         "positive_labels": {"CONFIRMED"},
-        "allowed_labels": {"CONFIRMED", "FALSE POSITIVE"},
+        "allowed_labels": {"CONFIRMED", "FALSE_POSITIVE", "CANDIDATE"},
     },
     "k2": {
         "label_column": "disposition",
         "positive_labels": {"CONFIRMED"},
-        "allowed_labels": {"CONFIRMED", "FALSE POSITIVE"},
+        "allowed_labels": {"CONFIRMED", "FALSE_POSITIVE", "CANDIDATE"},
     },
 }
 
 DEFAULT_IDENTIFIER_PRIORITY = [
-    "toi",
-    "tid",
-    "ctoi_alias",
-    "tfopwg_disp",
-    "kepid",
-    "kepoi_name",
-    "kepler_name",
-    "koi_disposition",
-    "tic_id",
-    "k2_name",
-    "pl_name",
+    "unified_id",
+    "stellar_id",
     "disposition",
+    "mission",
     "sample_index",
 ]
 
@@ -336,7 +299,16 @@ def load_models(
         if not path.exists():
             missing.append((name, path))
             continue
-        models[name] = load(path)
+        
+        # Add debugging to identify which model is causing KeyError: 72
+        import logging
+        logging.info(f"Loading model: {name} from {path}")
+        try:
+            models[name] = load(path)
+            logging.info(f"✓ Successfully loaded: {name}")
+        except Exception as e:
+            logging.error(f"✗ Failed to load {name}: {e}")
+            raise  # Re-raise to see full traceback
 
     return models, missing
 
@@ -407,8 +379,36 @@ def run_predictions(
         metadata["sample_index"] = np.arange(1, len(metadata) + 1)
 
     for name, pipeline in models.items():
-        proba = pipeline.predict_proba(features)[:, 1]
-        preds = pipeline.predict(features)
+        # --- Defensive feature alignment ---
+        # Create a copy to avoid modifying the original DataFrame in the loop
+        prediction_features = features.copy()
+        
+        # Try to get expected feature names from the model/pipeline
+        expected_features = None
+        if hasattr(pipeline, 'feature_names_in_'):
+            expected_features = pipeline.feature_names_in_
+        elif hasattr(pipeline, 'steps'):
+            for _, step_obj in pipeline.steps:
+                if hasattr(step_obj, 'feature_names_in_'):
+                    expected_features = step_obj.feature_names_in_
+                    break
+        
+        # If we found the expected feature list, reorder the DataFrame columns
+        if expected_features is not None:
+            try:
+                prediction_features = prediction_features[expected_features]
+            except KeyError as e:
+                missing_in_input = set(expected_features) - set(prediction_features.columns)
+                if missing_in_input:
+                    raise ValueError(
+                        f"Input data for model '{name}' is missing required features: {missing_in_input}"
+                    ) from e
+                # If it's not a missing column, re-raise the original error
+                raise e
+        # --- End of defensive feature alignment ---
+
+        proba = pipeline.predict_proba(prediction_features)[:, 1]
+        preds = pipeline.predict(prediction_features)
         df = pd.DataFrame(
             {
                 "planet_candidate_probability": proba,
@@ -459,15 +459,16 @@ def generate_transit_simulation(
                     continue
         return fallback
 
-    period_days = _lookup(["pl_orbper", "koi_period"], 5.0) or 5.0
+    # Updated to use standard feature names
+    period_days = _lookup(["orbital_period_days", "pl_orbper", "koi_period"], 5.0) or 5.0
     period_days = max(0.5, period_days)
 
-    duration_hours = _lookup(["pl_trandurh"], None)
+    duration_hours = _lookup(["transit_duration_hr", "pl_trandurh"], None)
     if duration_hours is None:
         duration_hours = max(1.0, period_days * 24 * 0.04)
     duration_hours = float(duration_hours)
 
-    depth_ppm = _lookup(["pl_trandep"], None)
+    depth_ppm = _lookup(["transit_depth_ppm", "pl_trandep"], None)
     impact_parameter = _lookup(["pl_imppar"], 0.3) or 0.3
     impact_parameter = float(min(0.9, max(0.0, impact_parameter)))
 
@@ -483,7 +484,7 @@ def generate_transit_simulation(
         depth = float(min(0.25, max(0.00005, depth)))
         radius_ratio = float(min(0.5, max(0.02, depth ** 0.5)))
     else:
-        planet_radius_earth = _lookup(["pl_rade", "koi_prad"], None)
+        planet_radius_earth = _lookup(["planet_radius_rearth", "pl_rade", "koi_prad"], None)
         if planet_radius_earth is not None:
             radius_ratio = float(min(0.5, max(0.02, planet_radius_earth / 109.2)))
         else:
@@ -842,6 +843,282 @@ def format_summary_table(
     return subset[ordered_columns]
 
 
+@dataclass
+class FunctionCall:
+    """Represents a function call requested by the Gemini model."""
+    name: str
+    args: Dict[str, object]
+
+
+def search_exoplanet_candidates(dataset_key: str, query: str, model_name: str | None = None) -> str:
+    """Search for exoplanet candidates by name or identifier with smart normalization."""
+    try:
+        import re
+        
+        bundle = load_dataset_bundle(dataset_key)
+        selected_models = [model_name] if model_name else list(default_models(dataset_key))
+        model_map, _ = load_models(dataset_key, selected_models)
+        if not model_map:
+            return "Model not available for this dataset."
+
+        predictions = run_predictions(model_map, bundle.features, bundle.metadata)
+        identifier_priority = DATASET_CONFIG[dataset_key]["identifier_priority"]
+        results = {}
+        
+        # Normalize query: handle "KOI 700" -> "K700", "TOI 700" -> "700"
+        normalized_query = query.lower().strip()
+        normalized_query = re.sub(r'^koi\s*', 'k', normalized_query)  # "KOI 700" -> "k700"
+        normalized_query = re.sub(r'^toi\s*', '', normalized_query)    # "TOI 700" -> "700"
+        normalized_query = re.sub(r'[\s\-_]', '', normalized_query)    # Remove spaces/hyphens
+        
+        lower_query = query.lower()
+
+        for model, df in predictions.items():
+            search_columns = [col for col in identifier_priority if col in df.columns]
+            
+            # Try exact match first
+            exact_mask = pd.Series(False, index=df.index)
+            for col in search_columns:
+                exact_mask |= df[col].astype(str).str.lower() == lower_query
+            
+            if exact_mask.any():
+                filtered = df.loc[exact_mask]
+            else:
+                # Try normalized match
+                normalized_mask = pd.Series(False, index=df.index)
+                for col in search_columns:
+                    normalized_values = df[col].astype(str).str.lower().str.replace(r'[\s\-_]', '', regex=True)
+                    normalized_mask |= normalized_values == normalized_query
+                    normalized_mask |= normalized_values.str.startswith(normalized_query + '.')
+                
+                if normalized_mask.any():
+                    filtered = df.loc[normalized_mask]
+                else:
+                    # Fall back to partial match
+                    partial_mask = pd.Series(False, index=df.index)
+                    for col in search_columns:
+                        partial_mask |= df[col].astype(str).str.lower().str.contains(lower_query, na=False)
+                    
+                    filtered = df.loc[partial_mask]
+            
+            if not filtered.empty:
+                # Return only first match for each model to keep response concise
+                results[model] = format_summary_table(
+                    filtered.head(1), top_k=None, identifier_priority=identifier_priority
+                ).to_dict(orient="records")
+
+        if not results:
+            return f"No candidates found matching '{query}' in {dataset_key} dataset. Try a different dataset or identifier."
+        return json.dumps(results, indent=2)
+    except Exception as e:
+        return f"Error during search: {e}"
+
+
+def get_top_candidate_predictions(dataset_key: str, top_k: int = 5) -> str:
+    """Get the top N exoplanet candidates with the highest prediction probability."""
+    try:
+        bundle = load_dataset_bundle(dataset_key)
+        selected_models = list(default_models(dataset_key))
+        model_map, _ = load_models(dataset_key, selected_models)
+        if not model_map:
+            return "No models available to get predictions."
+
+        predictions = run_predictions(model_map, bundle.features, bundle.metadata)
+        identifier_priority = DATASET_CONFIG[dataset_key]["identifier_priority"]
+        
+        summaries = {}
+        for model_name, df in predictions.items():
+            summary_df = format_summary_table(df, top_k, identifier_priority)
+            summaries[model_name] = summary_df.to_dict(orient="records")
+        
+        return json.dumps(summaries, indent=2)
+    except Exception as e:
+        return f"Error getting top candidates: {e}"
+
+
+def get_model_performance_metrics(dataset_key: str, model_name: str) -> str:
+    """Get the performance metrics for a specified model."""
+    try:
+        metrics, missing = load_metrics_for_models(dataset_key, [model_name])
+        if missing:
+            return f"Metrics for model '{model_name}' not found."
+        if not metrics:
+            return f"No metrics available for model '{model_name}'."
+        
+        return json.dumps(metrics.get(model_name, {}), indent=2)
+    except Exception as e:
+        return f"Error getting model metrics: {e}"
+
+
+def plot_pixelfile(starname: str) -> str:
+    """
+    Searches for and plots the Target Pixel File (TPF) for a given star name
+    from the TESS or Kepler/K2 mission data using lightkurve.
+    Returns information about the data availability and a Base64 encoded plot.
+    """
+    try:
+        # Import lightkurve only when needed (optional dependency)
+        from lightkurve import search_targetpixelfile
+        
+        print(f"Executing plot_pixelfile for: {starname}...")
+        
+        # Search for target pixel files
+        search_result = search_targetpixelfile(starname)
+        
+        if search_result is None or len(search_result) == 0:
+            return json.dumps({
+                "status": "error",
+                "message": f"No Target Pixel File found for '{starname}'. This target may not have been observed by TESS or Kepler/K2, or the data may not be publicly available yet."
+            })
+        
+        # Download the first available TPF with a timeout to prevent long waits
+        print(f"Downloading Target Pixel File for {starname}...")
+        import warnings
+        warnings.filterwarnings("ignore")  # Suppress warnings for faster processing
+        
+        # Use a smaller figure size for faster rendering
+        fig, ax = plt.subplots(figsize=(6, 6))
+        
+        # Download and plot with minimal data processing
+        pixelfile = search_result[0].download()
+        
+        # Plot only the first frame with minimal processing
+        pixelfile.plot(ax=ax, frame=0)
+        ax.set_title(f'TPF for {starname}')
+        
+        # Save plot to a memory buffer with lower quality for faster processing
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', dpi=100, bbox_inches='tight')
+        plt.close(fig)
+        buf.seek(0)
+        
+        # Encode image to Base64
+        plot_base64 = base64.b64encode(buf.read()).decode('utf-8')
+        
+        # Get only essential TPF information
+        tpf_info = {
+            "target_name": str(pixelfile.targetid) if hasattr(pixelfile, 'targetid') else starname,
+            "mission": str(pixelfile.mission) if hasattr(pixelfile, 'mission') else "Unknown",
+            "ra": float(pixelfile.ra) if hasattr(pixelfile, 'ra') else None,
+            "dec": float(pixelfile.dec) if hasattr(pixelfile, 'dec') else None,
+            "time_range": f"{pixelfile.time.min().value:.2f} to {pixelfile.time.max().value:.2f} BJD" if hasattr(pixelfile, 'time') else "N/A",
+            "cadence_count": int(len(pixelfile.time)) if hasattr(pixelfile, 'time') else 0,
+            "aperture_shape": f"{pixelfile.shape[1]}x{pixelfile.shape[2]} pixels" if hasattr(pixelfile, 'shape') and len(pixelfile.shape) >= 3 else "N/A",
+        }
+        
+        result = {
+            "status": "success",
+            "message": f"Target Pixel File downloaded and plotted successfully for '{starname}'",
+            "available_observations": len(search_result),
+            "downloaded_tpf": tpf_info,
+            "plot_base64": plot_base64  # Add the base64 string to the result
+        }
+        
+        return json.dumps(result, indent=2)
+        
+    except ImportError:
+        return json.dumps({
+            "status": "error",
+            "message": "Error: lightkurve package is not installed. Install it with: pip install lightkurve"
+        })
+    except Exception as e:
+        return json.dumps({
+            "status": "error",
+            "message": f"Error downloading or processing Target Pixel File for '{starname}': {str(e)}"
+        })
+
+
+AVAILABLE_TOOLS = {
+    "search_exoplanet_candidates": search_exoplanet_candidates,
+    "get_top_candidate_predictions": get_top_candidate_predictions,
+    "get_model_performance_metrics": get_model_performance_metrics,
+    "plot_pixelfile": plot_pixelfile,
+}
+
+def get_gemini_tools():
+    """Returns the list of tool definitions for Gemini using new google.genai API."""
+    if genai_types is None:
+        return []
+    
+    return [
+        genai_types.Tool(
+            function_declarations=[
+                genai_types.FunctionDeclaration(
+                    name="search_exoplanet_candidates",
+                    description="Search for exoplanet candidates by name or identifier within a given dataset (tess, kepler, k2).",
+                    parameters=genai_types.Schema(
+                        type=genai_types.Type.OBJECT,
+                        properties={
+                            "dataset_key": genai_types.Schema(
+                                type=genai_types.Type.STRING,
+                                description="The dataset to search (tess, kepler, or k2)."
+                            ),
+                            "query": genai_types.Schema(
+                                type=genai_types.Type.STRING,
+                                description="The name or identifier of the exoplanet candidate to search for."
+                            ),
+                            "model_name": genai_types.Schema(
+                                type=genai_types.Type.STRING,
+                                description="Optional: The specific prediction model to use."
+                            ),
+                        },
+                        required=["dataset_key", "query"],
+                    ),
+                ),
+                genai_types.FunctionDeclaration(
+                    name="get_top_candidate_predictions",
+                    description="Get the top N exoplanet candidates with the highest prediction probability from a dataset.",
+                    parameters=genai_types.Schema(
+                        type=genai_types.Type.OBJECT,
+                        properties={
+                            "dataset_key": genai_types.Schema(
+                                type=genai_types.Type.STRING,
+                                description="The dataset to get predictions from (tess, kepler, or k2)."
+                            ),
+                            "top_k": genai_types.Schema(
+                                type=genai_types.Type.INTEGER,
+                                description="The number of top candidates to return. Defaults to 5."
+                            ),
+                        },
+                        required=["dataset_key"],
+                    ),
+                ),
+                genai_types.FunctionDeclaration(
+                    name="get_model_performance_metrics",
+                    description="Get the performance metrics (like accuracy, precision, recall, f1-score, roc_auc) for a specified model on a given dataset.",
+                    parameters=genai_types.Schema(
+                        type=genai_types.Type.OBJECT,
+                        properties={
+                            "dataset_key": genai_types.Schema(
+                                type=genai_types.Type.STRING,
+                                description="The dataset the model was trained on (tess, kepler, or k2)."
+                            ),
+                            "model_name": genai_types.Schema(
+                                type=genai_types.Type.STRING,
+                                description="The name of the model to get metrics for (e.g., 'Random Forest', 'XGBoost')."
+                            ),
+                        },
+                        required=["dataset_key", "model_name"],
+                    ),
+                ),
+                genai_types.FunctionDeclaration(
+                    name="plot_pixelfile",
+                    description="Searches for and downloads the Target Pixel File (TPF) for a given star name (e.g., 'KIC 8462852', 'Kepler-10', 'TOI 700') from the TESS or Kepler/K2 mission data using lightkurve. Returns detailed information about available observations and downloaded data.",
+                    parameters=genai_types.Schema(
+                        type=genai_types.Type.OBJECT,
+                        properties={
+                            "starname": genai_types.Schema(
+                                type=genai_types.Type.STRING,
+                                description="The name or target ID of the astronomical target (star, exoplanet system) to download data for. Examples: 'KIC 8462852', 'Kepler-10', 'TOI 700', 'TIC 307210830'."
+                            )
+                        },
+                        required=["starname"],
+                    ),
+                ),
+            ]
+        )
+    ]
+
 def build_context_for_ai(
     model_results: Dict[str, pd.DataFrame],
     top_k: Optional[int],
@@ -863,7 +1140,7 @@ def build_context_for_ai(
 
 
 def configure_gemini(force_reload: bool = False) -> Optional[str]:
-    """Return the Gemini API key if available and configure the client."""
+    """Return the Gemini API key if available and return client instance."""
 
     global _ENV_LOADED_FOR_GEMINI
 
@@ -885,26 +1162,113 @@ def configure_gemini(force_reload: bool = False) -> Optional[str]:
         return None
     if genai is None:
         raise RuntimeError("google-generativeai is not installed; install it to enable Gemini.")
-    genai.configure(api_key=api_key)
+    
+    # Return API key, client will be created in call_gemini
     return api_key
 
 
 def call_gemini(model_name: str, prompt: str, context: Dict[str, object]) -> str:
-    """Generate a Gemini response using the provided context."""
+    """Generate a Gemini response using the provided context and function calling with new API."""
 
-    if genai is None:
-        raise RuntimeError("google-generativeai is not installed.")
-    model = genai.GenerativeModel(model_name)
-    response = model.generate_content(
-        [
-            "You are helping to interpret exoplanet candidate predictions.",
-            "Context JSON:",
-            json.dumps(context, indent=2),
-            "User prompt:",
-            prompt,
-        ]
+    if genai is None or genai_types is None:
+        raise RuntimeError("google.genai is not installed.")
+    
+    # Get API key from environment
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        raise RuntimeError("GEMINI_API_KEY not found in environment.")
+    
+    # Create client with API key
+    client = genai.Client(api_key=api_key)
+    
+    # Get tool definitions
+    tools = get_gemini_tools()
+    
+    # Create initial user prompt with context
+    user_prompt = f"""You are an expert AI assistant helping to interpret exoplanet candidate predictions.
+
+Context Data:
+{json.dumps(context, indent=2)}
+
+User Question: {prompt}
+
+Please provide a detailed and helpful answer. You can use the available functions to search for specific candidates or get additional information.
+
+CRITICAL INSTRUCTION: If you use the plot_pixelfile function and it returns a JSON with plot_base64, you MUST include the complete JSON response (including the plot_base64 field) in your answer. Do not summarize or omit the plot_base64 data. The entire JSON response is needed to display the image on the webpage."""
+    
+    # Turn 1: Send initial request with tools
+    response = client.models.generate_content(
+        model=model_name,
+        contents=user_prompt,
+        config=genai_types.GenerateContentConfig(tools=tools)
     )
-    return response.text if hasattr(response, "text") else "(No response received.)"
+    
+    # Check if model called a function
+    if response.function_calls:
+        # Handle function calls
+        max_iterations = 5  # Prevent infinite loops
+        iteration = 0
+        
+        # Build conversation history
+        contents = [
+            genai_types.Content(
+                role="user",
+                parts=[genai_types.Part.from_text(text=user_prompt)],
+            )
+        ]
+        
+        while response.function_calls and iteration < max_iterations:
+            iteration += 1
+            function_call = response.function_calls[0]
+            function_name = function_call.name
+            function_args = dict(function_call.args)
+            
+            # Add assistant's function call to history
+            contents.append(
+                genai_types.Content(
+                    role="assistant",
+                    parts=[
+                        genai_types.Part.from_function_call(
+                            name=function_name,
+                            args=function_args,
+                        )
+                    ],
+                )
+            )
+            
+            # Execute the function
+            if function_name in AVAILABLE_TOOLS:
+                try:
+                    tool_function = AVAILABLE_TOOLS[function_name]
+                    result = tool_function(**function_args)
+                    function_output = {"result": result}
+                except Exception as e:
+                    function_output = {"error": str(e)}
+            else:
+                function_output = {"error": f"Unknown function: {function_name}"}
+            
+            # Add tool response to history
+            contents.append(
+                genai_types.Content(
+                    role="tool",
+                    parts=[
+                        genai_types.Part.from_function_response(
+                            name=function_name,
+                            response=function_output,
+                        )
+                    ],
+                )
+            )
+            
+            # Send back to model with function result
+            response = client.models.generate_content(
+                model=model_name,
+                contents=contents,
+                config=genai_types.GenerateContentConfig(tools=tools)
+            )
+    
+    # Return final text response
+    return response.text if hasattr(response, "text") and response.text else "(No response generated.)"
 
 
 def dataset_feature_statistics(dataset_key: str) -> pd.DataFrame:
@@ -957,4 +1321,7 @@ __all__ = [
     "dataset_feature_statistics",
     "generate_transit_simulation",
     "ensure_output_directories",
+    "search_exoplanet_candidates",
+    "get_top_candidate_predictions",
+    "get_model_performance_metrics",
 ]

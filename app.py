@@ -201,7 +201,7 @@ def create_app() -> Flask:
         if request.method == "POST":
             try:
                 manual_inputs = {}
-                for feature in stats.index:
+                for feature in ordered_features:
                     field_name = f"feature_{feature}"
                     raw_value = request.form.get(field_name, "")
                     if raw_value.strip() == "":
@@ -209,11 +209,17 @@ def create_app() -> Flask:
                     else:
                         manual_inputs[feature] = float(raw_value)
 
+                # Ensure all features from stats.index are present
+                for feature in stats.index:
+                    if feature not in manual_inputs:
+                        manual_inputs[feature] = float(stats.loc[feature, "median"])
+
                 model_map, missing = load_models(dataset_key, selected_models)
                 missing_models = [name for name, _ in missing]
                 if not model_map:
                     flash("Tidak ada model yang berhasil dimuat. Periksa artefak di folder models/.", "error")
                 else:
+                    # Ensure the DataFrame is created with the correct column order
                     manual_df = pd.DataFrame([manual_inputs], columns=stats.index)
                     predictions = run_predictions(model_map, manual_df)
                     prediction_results = []
@@ -235,6 +241,15 @@ def create_app() -> Flask:
             except ValueError as exc:
                 flash(str(exc), "error")
             except Exception as exc:  # pragma: no cover - runtime guard
+                import logging
+                logging.basicConfig(level=logging.INFO)
+                logging.error(f"Error during manual prediction: {exc}", exc_info=True)
+                if 'manual_inputs' in locals():
+                    logging.info(f"Manual inputs received: {manual_inputs}")
+                if 'manual_df' in locals():
+                    logging.info(f"DataFrame shape for prediction: {manual_df.shape}")
+                    logging.info(f"DataFrame columns: {manual_df.columns.tolist()}")
+                    logging.info(f"DataFrame content:\n{manual_df.head().to_string()}")
                 flash(f"Gagal menjalankan prediksi: {exc}", "error")
 
         return render_template(
@@ -381,20 +396,60 @@ def create_app() -> Flask:
                     predictions = run_predictions(model_map, bundle.features, bundle.metadata)
                     identifier_priority = DATASET_CONFIG[dataset_key]["identifier_priority"]  # type: ignore[index]
                     results = {}
+                    
+                    # Normalize query: remove spaces, hyphens, underscores for flexible matching
+                    import re
+                    
+                    # Replace "KOI" with "K" for Kepler objects (e.g., "KOI 700" -> "K700")
+                    # Replace "TOI" prefix for TESS objects (e.g., "TOI 700" -> "700")
+                    normalized_query = query.lower().strip()
+                    normalized_query = re.sub(r'^koi\s*', 'k', normalized_query)  # "KOI 700" -> "k700"
+                    normalized_query = re.sub(r'^toi\s*', '', normalized_query)    # "TOI 700" -> "700"
+                    # Remove spaces and hyphens but KEEP periods for decimal matching
+                    normalized_query = re.sub(r'[\s\-_]', '', normalized_query)    # Remove spaces/hyphens but keep dots
+                    
                     lower_query = query.lower()
+                    
                     for model_name, df in predictions.items():
                         search_columns = [col for col in identifier_priority if col in df.columns]
-                        mask = pd.Series(False, index=df.index)
+                        
+                        # First, try exact match (case-insensitive)
+                        exact_mask = pd.Series(False, index=df.index)
                         for col in search_columns:
-                            mask |= df[col].astype(str).str.lower().str.contains(lower_query, na=False)
-                        filtered = df.loc[mask]
-                        if filtered.empty:
-                            continue
+                            exact_mask |= df[col].astype(str).str.lower() == lower_query
+                        
+                        # If exact match found, use only the first exact match
+                        if exact_mask.any():
+                            filtered = df.loc[exact_mask].head(1)
+                        else:
+                            # Try normalized match (ignoring spaces, hyphens, etc.)
+                            normalized_mask = pd.Series(False, index=df.index)
+                            for col in search_columns:
+                                # Normalize each value in the column for comparison (keep periods for decimal IDs)
+                                normalized_values = df[col].astype(str).str.lower().str.replace(r'[\s\-_]', '', regex=True)
+                                normalized_mask |= normalized_values == normalized_query
+                                # Also try partial match for cases like "700" matching "700.01"
+                                normalized_mask |= normalized_values.str.startswith(normalized_query + '.')
+                            
+                            if normalized_mask.any():
+                                filtered = df.loc[normalized_mask].head(1)
+                            else:
+                                # If still no match, try partial match but only return the first result
+                                partial_mask = pd.Series(False, index=df.index)
+                                for col in search_columns:
+                                    partial_mask |= df[col].astype(str).str.lower().str.contains(lower_query, na=False)
+                                
+                                if partial_mask.any():
+                                    filtered = df.loc[partial_mask].head(1)
+                                else:
+                                    continue
+                        
                         results[model_name] = format_summary_table(
                             filtered,
                             top_k=None,
                             identifier_priority=identifier_priority,
                         ).to_dict(orient="records")
+                    
                     if not results:
                         flash("Target tidak ditemukan dalam prediksi terbaru.", "info")
             except Exception as exc:  # pragma: no cover - runtime guard
@@ -417,7 +472,7 @@ def create_app() -> Flask:
         )
         top_k = int(request.form.get("top_k", DEFAULT_TOP_K))
         prompt = request.form.get("prompt", "")
-        model_choice = request.form.get("llm_model", "models/gemini-2.5-flash-lite")
+        model_choice = request.form.get("llm_model", "models/gemini-2.5-flash")
         response_text = None
         context_preview = None
         error_message = None
