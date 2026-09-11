@@ -29,5 +29,5 @@ USER user
 
 EXPOSE 7860
 
-# Run with Gunicorn on port 7860
-CMD ["gunicorn", "--bind", "0.0.0.0:7860", "--timeout", "120", "--workers", "2", "app:app"]
+# Run with Gunicorn dynamically on $PORT provided by host (Render uses 10000 or custom)
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-10000} --timeout 120 --workers 2 app:app"]
