@@ -9,13 +9,12 @@ import pandas as pd
 from sklearn.impute import SimpleImputer
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-EXOPLANTROPY_MAIN_DIR = PROJECT_ROOT / "exoplantropy-main"
-DATA_PATH = EXOPLANTROPY_MAIN_DIR / "tabular_data" / "combined_all.csv"
+DATA_PATH = PROJECT_ROOT / "tabular_data" / "combined_all.csv"
 TESS_DATA_PATH = DATA_PATH
 KEPLER_DATA_PATH = DATA_PATH
 K2_DATA_PATH = DATA_PATH
 REPORTS_DIR = PROJECT_ROOT / "reports"
-MODELS_DIR = EXOPLANTROPY_MAIN_DIR / "models"
+MODELS_DIR = PROJECT_ROOT / "models"
 
 # Identifier columns from combined_all.csv
 IDENTIFIER_COLUMNS = ("unified_id", "stellar_id", "disposition", "mission")
@@ -62,7 +61,14 @@ class Dataset:
 class DataFrameSimpleImputer(SimpleImputer):
     """SimpleImputer variant that preserves pandas DataFrame structure."""
 
+    def __setstate__(self, state):
+        super().__setstate__(state)
+        if not hasattr(self, "_fill_dtype"):
+            self._fill_dtype = getattr(self, "_fit_dtype", float)
+
     def transform(self, X):
+        if not hasattr(self, "_fill_dtype"):
+            self._fill_dtype = getattr(self, "_fit_dtype", float)
         result = super().transform(X)
         if isinstance(X, pd.DataFrame):
             return pd.DataFrame(result, columns=X.columns, index=X.index)

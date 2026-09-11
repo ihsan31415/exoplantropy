@@ -4,7 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI Assistant - ExoPlanTropy</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/Logo.png') }}" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Oxanium:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
@@ -91,15 +93,31 @@
             <div class="flex justify-between items-center">
               <button
                 type="submit"
-                class="bg-white hover:bg-gray-200 text-gray-900 font-semibold rounded-lg px-8 py-3 transition-colors duration-300"
+                id="ask-button"
+                class="bg-white hover:bg-gray-200 text-gray-900 font-semibold rounded-lg px-8 py-3 transition-all duration-300 flex items-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
               >
-                Ask Entropy
+                <span id="button-spinner" class="hidden animate-spin h-4 w-4 border-2 border-gray-900 border-t-transparent rounded-full"></span>
+                <span id="button-text">Ask Entropy</span>
               </button>
               <p class="text-xs text-gray-400">
                 Context is built from the default models that loaded successfully.
               </p>
             </div>
           </form>
+          <script>
+            document.querySelector('form').addEventListener('submit', function(e) {
+              const textarea = document.querySelector('textarea[name="prompt"]');
+              if (textarea && textarea.value.trim()) {
+                const btn = document.getElementById('ask-button');
+                const spinner = document.getElementById('button-spinner');
+                const text = document.getElementById('button-text');
+                btn.disabled = true;
+                spinner.classList.remove('hidden');
+                text.textContent = 'Analyzing & Generating...';
+                btn.classList.add('opacity-75');
+              }
+            });
+          </script>
         </section>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -256,14 +274,14 @@
           }
 
           if (content === '') {
-            // No image found, display the text response
-            content = `<p class="text-gray-200">${responseText.replace(/\\n/g, '<br>')}</p>`;
+            // Render rich Markdown using marked.js
+            content = `<div class="text-gray-200 leading-relaxed space-y-3">${typeof marked !== 'undefined' ? marked.parse(responseText) : responseText}</div>`;
           }
 
           responseContainer.innerHTML = content;
         } catch (e) {
-          // Not a JSON object, treat as plain text
-          responseContainer.innerHTML = `<p class="text-gray-200">${responseText.replace(/\\n/g, '<br>')}</p>`;
+          // Not a JSON object, render as Markdown
+          responseContainer.innerHTML = `<div class="text-gray-200 leading-relaxed space-y-3">${typeof marked !== 'undefined' ? marked.parse(responseText) : responseText}</div>`;
         }
       });
     </script>

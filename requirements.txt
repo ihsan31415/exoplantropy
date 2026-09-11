@@ -6,6 +6,7 @@ seaborn
 joblib
 imbalanced-learn
 google-generativeai
+google-genai
 xgboost
 lightgbm
 catboost

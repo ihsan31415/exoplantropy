@@ -16,6 +16,8 @@ Thumbs.db
 
 # Local configuration secrets
 config/*.env
+.env
 
 # Notebooks checkpoints
 .ipynb_checkpoints/
+

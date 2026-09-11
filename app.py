@@ -6,6 +6,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
 
+from dotenv import load_dotenv
+load_dotenv()
+
 import pandas as pd
 from flask import (
     Flask,
@@ -14,6 +17,7 @@ from flask import (
     render_template,
     request,
     send_file,
+    send_from_directory,
     url_for,
 )
 
@@ -135,6 +139,14 @@ def create_app() -> Flask:
         if raw_key in DATASET_LABEL_TO_KEY:
             return DATASET_LABEL_TO_KEY[raw_key]
         return "tess"
+
+    @app.route("/favicon.ico")
+    def favicon():
+        return send_from_directory(
+            os.path.join(app.root_path, "static", "img"),
+            "Logo.png",
+            mimetype="image/png",
+        )
 
     @app.route("/")
     def index():
@@ -474,7 +486,7 @@ def create_app() -> Flask:
         )
         top_k = int(request.form.get("top_k", DEFAULT_TOP_K))
         prompt = request.form.get("prompt", "")
-        model_choice = request.form.get("llm_model", "models/gemini-2.5-flash")
+        model_choice = request.form.get("llm_model", "gemini-3.6-flash")
         response_text = None
         context_preview = None
         error_message = None
@@ -484,11 +496,6 @@ def create_app() -> Flask:
                 bundle = load_dataset_bundle(dataset_key)
                 selected_models = list(default_models(dataset_key))
                 model_map, missing = load_models(dataset_key, selected_models)
-                if missing:
-                    flash(
-                        "Beberapa model default belum tersedia. Pertimbangkan untuk melatih ulang terlebih dahulu.",
-                        "warning",
-                    )
                 if not model_map:
                     flash("Tidak ada model yang tersedia untuk membuat konteks AI.", "error")
                 else:

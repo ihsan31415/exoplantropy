@@ -1,2 +1,0 @@
-# exoplantropy
-exoplanet searcher

@@ -1,8 +1,12 @@
-from google import genai
-from google.genai import types
+import os
 import json
 import matplotlib.pyplot as plt
+from dotenv import load_dotenv
+from google import genai
+from google.genai import types
 from lightkurve import search_targetpixelfile
+
+load_dotenv()
 
 # --- 1. Define the Function and Tool Schema ---
 
@@ -59,12 +63,11 @@ available_functions = {
 }
 
 # --- 3. Implement the Two-Turn Conversation Loop ---
+api_key = os.environ.get("GEMINI_API_KEY")
+if not api_key:
+    raise RuntimeError("GEMINI_API_KEY tidak ditemukan di environment / file .env")
 
-# Replace 'YOUR_API_KEY' with your actual Google AI API key
-# client = genai.Client(api_key="AIzaSyA9Xmklq0FvdkIohDdECcAVIjhGpYqw6xw")
-# NOTE: It's best practice to initialize the client without an argument if the API key
-# is set in the environment variable (GEMINI_API_KEY).
-client = genai.Client(api_key="AIzaSyA9Xmklq0FvdkIohDdECcAVIjhGpYqw6xw")
+client = genai.Client(api_key=api_key)
 
 # The user's prompt that triggers the function call
 user_prompt = "Can you explain me about exoplanets"
@@ -75,7 +78,7 @@ print("--- Turn 1: Sending prompt and tools to the model ---")
 
 # Pass the tools (function schema) to the generate_content call
 response = client.models.generate_content(
-    model="gemini-2.5-flash",
+    model="gemini-3.6-flash",
     contents=user_prompt,
     config=types.GenerateContentConfig(tools=[plot_pixelfile_tool])
 )
@@ -139,7 +142,7 @@ if response.function_calls:
 
         # Call the model again with the history and function result
         final_response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-3.6-flash",
             contents=contents,
             config=types.GenerateContentConfig(tools=[plot_pixelfile_tool]) # Include tools again for context
         )
